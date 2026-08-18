@@ -129,17 +129,16 @@ export async function hasAppAccess(
       }
     }
 
-    // Resolve app ID if it's a slug
+    // Resolve app ID if it's a slug or custom ID (not a standard UUID)
     let resolvedAppId = appId;
     if (!uuidRegex.test(appId)) {
       const appLookup = await db.execute(sql`
-        SELECT id FROM forge_apps WHERE slug = ${appId} LIMIT 1
+        SELECT id FROM forge_apps WHERE id = ${appId} OR slug = ${appId} LIMIT 1
       `);
       const lookupRows = (appLookup.rows || appLookup) as any[];
-      if (!lookupRows || lookupRows.length === 0) {
-        return false;
+      if (lookupRows && lookupRows.length > 0) {
+        resolvedAppId = lookupRows[0].id as string;
       }
-      resolvedAppId = lookupRows[0].id as string;
     }
 
     const cacheKey = `${userId}:${resolvedAppId}`;

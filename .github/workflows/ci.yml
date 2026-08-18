@@ -163,6 +163,11 @@ jobs:
   integration-tests:
     name: Integration Tests & Postgres
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgres://lifeos:change_me_db_password@localhost:5432/org_db
+      DATABASE_READONLY_URL: postgres://lifeos:change_me_db_password@localhost:5432/org_db
+      JWT_SECRET: dev-docker-secret-key-that-is-at-least-32-characters-long
+      PORTAL_URL: http://localhost:3001
     services:
       postgres:
         image: postgres:17-alpine
@@ -196,17 +201,11 @@ jobs:
           psql -h localhost -U lifeos -d org_db -f docker/development/init-db.sql
 
       - name: Run Database Schema Initialization & Seed
-        env:
-          DATABASE_URL: postgres://lifeos:change_me_db_password@localhost:5432/org_db
         run: |
           bun run core/src/database/initialize-local-db.ts
           bun -e "import { parseAndRegisterManifests } from './core/src/backend/utils/manifestParser'; await parseAndRegisterManifests();"
 
       - name: Run Full Integration Test Suite
-        env:
-          DATABASE_URL: postgres://lifeos:change_me_db_password@localhost:5432/org_db
-          JWT_SECRET: dev-docker-secret-key-that-is-at-least-32-characters-long
-          PORTAL_URL: http://localhost:3001
         run: |
           bun test test/integration
 
