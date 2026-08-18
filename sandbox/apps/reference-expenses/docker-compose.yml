@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  reference-expenses:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reference-expenses
+    ports:
+      - "8085:8085"
+    environment:
+      - DATABASE_URL=postgres://lifeos:change_me_db_password@db:5432/org_db
+      - PORT=8085
+      - PORTAL_INTERNAL_URL=http://app:3001
+    restart: always
+    networks:
+      - sgforge-network
+
+networks:
+  sgforge-network:
+    name: sgforge-network
+    external: true

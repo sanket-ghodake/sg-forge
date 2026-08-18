@@ -1,0 +1,14 @@
+rules:
+  - id: hardcoded-secret-key
+    patterns:
+      - pattern: const $X = "secret_key_12345";
+    message: "Avoid hardcoding secret keys."
+    languages: [javascript, typescript, python, go]
+    severity: ERROR
+
+  - id: no-eval-usage
+    patterns:
+      - pattern: eval(...)
+    message: "Avoid using eval() due to security risks."
+    languages: [javascript, typescript, python]
+    severity: ERROR

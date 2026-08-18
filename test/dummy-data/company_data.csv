@@ -1,0 +1,85 @@
+EID,Name,Email,Role,Designation,Vertical,Subsidiary,Manager EID
+E0001,"Aarav",superadmin1@sgforge.com,super_admin,"","","",
+E0011,"Ananya",superadmin2@sgforge.com,super_admin,"","","",
+E0002,"Vihaan",it-admin@sgforge.com,admin,"","","",
+E0012,"Ishaan",hr-admin@sgforge.com,admin,"","","",
+E0013,"Krishna",finance-admin@sgforge.com,admin,"","","",
+E0014,"Arjun",security-admin@sgforge.com,admin,"","","",
+E0015,"Diya",ops-admin@sgforge.com,admin,"","","",
+E0016,"Priya",support-admin@sgforge.com,admin,"","","",
+E0017,"Riya",audit-admin@sgforge.com,read_only_admin,"","","",
+E0018,"Aadhya",dev-admin@sgforge.com,admin,"","","",
+E0019,"Kavya",provision-admin@sgforge.com,admin,"","","",
+E0020,"Kabir",billing-admin@sgforge.com,admin,"","","",
+E0003,"Sundar Pichai",sundar.pichai@sgforge.com,user,"L12 CEO","Executive","SG Forge Ltd",
+E0004,"Demis Hassabis",demis.hassabis@sgforge.com,user,"L10 VP of DeepMind","Engineering","SG Forge Ltd",E0003
+E0025,"Prabhakar Raghavan",prabhakar.raghavan@sgforge.com,user,"L10 VP of Search","Product Management","SG Forge Ltd",E0003
+E0026,"Thomas Kurian",thomas.kurian@sgforge.com,user,"L10 VP of Cloud","Sales & Operations","SG Forge Ltd",E0003
+E0022,"Ruth Porat",ruth.porat@sgforge.com,user,"L10 CFO & President","Finance","SG Forge Ltd",E0003
+E0008,"Jeff Dean",jeff.dean@sgforge.com,user,"L8 Director of Research","Engineering","SG Forge Ltd",E0004
+E0009,"Sanjay Ghemawat",sanjay@sgforge.com,user,"L8 Director of Systems","Engineering","SG Forge Ltd",E0004
+E0010,"Ben Gomes",ben.gomes@sgforge.com,user,"L8 Director of Search Experience","Product Management","SG Forge Ltd",E0025
+E0021,"Urs Hölzle",urs.holzle@sgforge.com,user,"L8 Director of Infrastructure","Sales & Operations","SG Forge Ltd",E0026
+E0023,"Fiona Cicconi",fiona.cicconi@sgforge.com,user,"L8 Director of People Ops","Human Resources","SG Forge Ltd",E0022
+E0005,"Diane Greene",diane.greene@sgforge.com,user,"L6 Cloud Manager","Engineering","SG Forge Ltd",E0021
+E0027,"Eric Schmidt",eric.schmidt@sgforge.com,user,"L6 Tech Ops Manager","Engineering","SG Forge Ltd",E0021
+E0028,"Marissa Mayer",marissa.mayer@sgforge.com,user,"L6 Search UI Manager","Product Management","SG Forge Ltd",E0010
+E0029,"Susan Wojcicki",susan.wojcicki@sgforge.com,user,"L6 Ads Manager","Product Management","SG Forge Ltd",E0010
+E0030,"Amit Singhal",amit.singhal@sgforge.com,user,"L6 Ranking Manager","Product Management","SG Forge Ltd",E0010
+E0031,"Blaise Agüera",blaise@sgforge.com,user,"L6 ML Research Manager","Engineering","SG Forge Ltd",E0008
+E0032,"Ilya Sutskever",ilya.sutskever@sgforge.com,user,"L6 Deep Learning Manager","Engineering","SG Forge Ltd",E0008
+E0033,"Corinna Cortes",corinna.cortes@sgforge.com,user,"L6 NY Research Manager","Engineering","SG Forge Ltd",E0009
+E0034,"Hal Varian",hal.varian@sgforge.com,user,"L6 Chief Economist Manager","Finance","SG Forge Ltd",E0023
+E0006,"Geoffrey Hinton",geoff.hinton@sgforge.com,user,"L5 Staff Research Scientist","Engineering","SG Forge Ltd",E0032
+E0007,"Yann LeCun",yann.lecun@sgforge.com,user,"L5 Staff Scientist","Engineering","SG Forge Ltd",E0032
+E0035,"Yoshua Bengio",yoshua.bengio@sgforge.com,user,"L5 Staff Scientist","Engineering","SG Forge Ltd",E0032
+E0036,"Chris Manning",chris.manning@sgforge.com,user,"L5 Staff Scientist","Engineering","SG Forge Ltd",E0031
+E0037,"Fei-Fei Li",feifei.li@sgforge.com,user,"L5 Staff Scientist","Engineering","SG Forge Ltd",E0031
+E0038,"Andrej Karpathy",andrej.karpathy@sgforge.com,user,"L5 Staff Engineer","Engineering","SG Forge Ltd",E0032
+E0039,"Ian Goodfellow",ian.goodfellow@sgforge.com,user,"L5 Staff Engineer","Engineering","SG Forge Ltd",E0032
+E0040,"Andrew Ng",andrew.ng@sgforge.com,user,"L5 Staff Scientist","Engineering","SG Forge Ltd",E0028
+E0041,"Sebastian Thrun",sebastian.thrun@sgforge.com,user,"L5 Staff Scientist","Engineering","SG Forge Ltd",E0028
+E0042,"Guido van Rossum",guido@sgforge.com,user,"L5 Staff Engineer","Engineering","SG Forge Ltd",E0005
+E0043,"Bjarne Stroustrup",bjarne@sgforge.com,user,"L5 Staff Engineer","Engineering","SG Forge Ltd",E0027
+E0044,"Ken Thompson",ken@sgforge.com,user,"L5 Staff Engineer","Engineering","SG Forge Ltd",E0033
+E0045,"Aarav",aarav.45@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0041
+E0046,"Vihaan",vihaan.46@sgforge.com,user,"L3 Associate Analyst","Sales & Operations","SG Forge Ltd",E0026
+E0047,"Aditya",aditya.47@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0040
+E0048,"Sai",sai.48@sgforge.com,user,"L4 Product Analyst","Product Management","SG Forge Ltd",E0030
+E0049,"Ishaan",ishaan.49@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0040
+E0050,"Krishna",krishna.50@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0039
+E0051,"Arjun",arjun.51@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0039
+E0052,"Kabir",kabir.52@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0042
+E0053,"Reyansh",reyansh.53@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0006
+E0054,"Aryan",aryan.54@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0042
+E0055,"Aarush",aarush.55@sgforge.com,user,"L4 Operations Analyst","Sales & Operations","SG Forge Ltd",E0027
+E0056,"Vivaan",vivaan.56@sgforge.com,user,"L4 Operations Analyst","Human Resources","SG Forge Ltd",E0023
+E0057,"Pranav",pranav.57@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0040
+E0058,"Rohan",rohan.58@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0035
+E0059,"Dev",dev.59@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0038
+E0060,"Rahul",rahul.60@sgforge.com,user,"L4 Operations Analyst","Finance","SG Forge Ltd",E0034
+E0061,"Karan",karan.61@sgforge.com,user,"L4 Product Analyst","Product Management","SG Forge Ltd",E0028
+E0062,"Siddharth",siddharth.62@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0036
+E0063,"Aman",aman.63@sgforge.com,user,"L3 Associate Analyst","Product Management","SG Forge Ltd",E0029
+E0064,"Rishi",rishi.64@sgforge.com,user,"L3 Associate Analyst","Sales & Operations","SG Forge Ltd",E0026
+E0065,"Neil",neil.65@sgforge.com,user,"L3 Associate Analyst","Product Management","SG Forge Ltd",E0030
+E0066,"Yash",yash.66@sgforge.com,user,"L4 Operations Analyst","Human Resources","SG Forge Ltd",E0023
+E0067,"Dhruv",dhruv.67@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0043
+E0068,"Ansh",ansh.68@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0007
+E0069,"Kunwar",kunwar.69@sgforge.com,user,"L4 Product Analyst","Product Management","SG Forge Ltd",E0030
+E0070,"Shaurya",shaurya.70@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0035
+E0071,"Kshitiz",kshitiz.71@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0006
+E0072,"Tushar",tushar.72@sgforge.com,user,"L4 Operations Analyst","Sales & Operations","SG Forge Ltd",E0005
+E0073,"Ayush",ayush.73@sgforge.com,user,"L4 Operations Analyst","Human Resources","SG Forge Ltd",E0023
+E0074,"Madhav",madhav.74@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0035
+E0075,"Kartik",kartik.75@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0036
+E0076,"Ganesh",ganesh.76@sgforge.com,user,"L4 Product Analyst","Product Management","SG Forge Ltd",E0030
+E0077,"Sanjay",sanjay.77@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0040
+E0078,"Suresh",suresh.78@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0036
+E0079,"Ramesh",ramesh.79@sgforge.com,user,"L3 Software Engineer I","Engineering","SG Forge Ltd",E0038
+E0080,"Vijay",vijay.80@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0041
+E0081,"Anil",anil.81@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0041
+E0082,"Sunil",sunil.82@sgforge.com,user,"L3 Associate Analyst","Sales & Operations","SG Forge Ltd",E0021
+E0083,"Rajesh",rajesh.83@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0039
+E0084,"Sameer",sameer.84@sgforge.com,user,"L4 Operations Analyst","Sales & Operations","SG Forge Ltd",E0027
+E0085,"Amit",amit.85@sgforge.com,user,"L4 Software Engineer II","Engineering","SG Forge Ltd",E0006

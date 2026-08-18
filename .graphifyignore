@@ -1,0 +1,30 @@
+# ==============================================================================
+# Graphify Knowledge Graph Ignore Configuration
+# ==============================================================================
+
+/portables/
+/node_modules/
+/**/node_modules/
+/.env*
+/graphify-out/
+/.git/
+/.agents/
+/.venv/
+/.node_env/
+/volume/
+/site/
+/test/coverage/
+/test/dummy-data/
+/scripts/portable/
+/.precommit_container_logs/
+/docs/archive/
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+idea.md
+currently_working.md
+*.log
+*.sqlite
+*.sqlite3
+*.dump
+*.db

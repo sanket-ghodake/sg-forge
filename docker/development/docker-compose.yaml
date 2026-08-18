@@ -1,0 +1,220 @@
+name: ${COMPOSE_PROJECT_NAME:-sgforge}
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: ${PROJECT_NAME:-sgforge}-${APP_ENV:-dev}-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lifeos
+      POSTGRES_PASSWORD: change_me_db_password
+      POSTGRES_DB: org_db
+    ports:
+      - "127.0.0.1:5433:5432"
+    command: postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lifeos -d org_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - db-core-net
+      - db-expenses-net
+      - db-go-net
+
+  app:
+    build:
+      context: ../..
+      dockerfile: docker/development/Dockerfile
+    container_name: ${PROJECT_NAME:-sgforge}-${APP_ENV:-dev}-portal
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://lifeos:change_me_db_password@db:5432/org_db
+      - DATABASE_READONLY_URL=postgres://lifeos:change_me_db_password@db:5432/org_db
+      - PORTAL_URL=http://localhost:3001
+      - PORT=3001
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=1
+      - RUNNING_IN_DOCKER=true
+      - NODE_OPTIONS=--max-old-space-size=512
+      - JWT_SECRET=${JWT_SECRET:-dev-docker-secret-key-that-is-at-least-32-characters-long}
+      - DEV_DASHBOARD_PASSWORD=${DEV_DASHBOARD_PASSWORD:-admin123}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "3001:3001"
+      - "3002:3002"
+      - "3003:3003"
+    volumes:
+      - ../..:/app
+      - sgforge-root-node-modules:/app/node_modules
+      - sgforge-frontend-node-modules:/app/core/src/frontend/node_modules
+      - sgforge-next-cache:/app/core/src/frontend/.next
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - db-core-net
+      - portal-net
+      - sgforge-network
+
+  reference-expenses:
+    build:
+      context: ../../sandbox/apps/reference-expenses
+      dockerfile: Dockerfile
+    container_name: ${PROJECT_NAME:-sgforge}-${APP_ENV:-dev}-expenses
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://app_reference_expenses:change_me_expenses_password@db:5432/org_db
+      - PORT=8085
+      - PORTAL_URL=http://app:3001
+      - CLIENT_ID=client_reference_expenses
+      - CLIENT_SECRET=secret_reference_expenses_dev_key
+    ports:
+      - "8085:8085"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - db-expenses-net
+      - portal-net
+    restart: unless-stopped
+
+  reference-go:
+    build:
+      context: ../../sandbox/apps/reference-go
+      dockerfile: Dockerfile
+    container_name: ${PROJECT_NAME:-sgforge}-${APP_ENV:-dev}-go
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://app_reference_go:change_me_go_password@db:5432/org_db
+      - PORT=8086
+      - PORTAL_URL=http://app:3001
+      - CLIENT_ID=client_reference_go
+      - CLIENT_SECRET=secret_reference_go_dev_key
+    ports:
+      - "8086:8086"
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - db-go-net
+      - portal-net
+    restart: unless-stopped
+
+  reference-python:
+    build:
+      context: ../../sandbox/apps/reference-python
+      dockerfile: Dockerfile
+    container_name: ${PROJECT_NAME:-sgforge}-${APP_ENV:-dev}-python
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://app_reference_python:change_me_python_password@db:5432/org_db
+      - PORT=8087
+      - PORTAL_URL=http://app:3001
+      - CLIENT_ID=client_reference_python
+      - CLIENT_SECRET=secret_reference_python_dev_key
+    ports:
+      - "8087:8087"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - portal-net
+    restart: unless-stopped
+
+  telemetry-dashboard:
+    build:
+      context: ../../sandbox/apps/telemetry-dashboard
+      dockerfile: Dockerfile
+    container_name: ${PROJECT_NAME:-sgforge}-${APP_ENV:-dev}-telemetry
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - PORT=8080
+      - PORTAL_URL=http://app:3001
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - portal-net
+    restart: unless-stopped
+
+networks:
+  sgforge-network:
+    name: ${PROJECT_NAME:-sgforge}-network
+    external: true
+  portal-net:
+    name: ${PROJECT_NAME:-sgforge}-portal-net
+  db-core-net:
+    name: ${PROJECT_NAME:-sgforge}-db-core-net
+  db-expenses-net:
+    name: ${PROJECT_NAME:-sgforge}-db-expenses-net
+  db-go-net:
+    name: ${PROJECT_NAME:-sgforge}-db-go-net
+
+volumes:
+  pgdata:
+    name: ${PROJECT_NAME:-sgforge}-pgdata
+  sgforge-root-node-modules:
+    name: ${PROJECT_NAME:-sgforge}-root-node-modules
+  sgforge-frontend-node-modules:
+    name: ${PROJECT_NAME:-sgforge}-frontend-node-modules
+  sgforge-next-cache:
+    name: ${PROJECT_NAME:-sgforge}-next-cache

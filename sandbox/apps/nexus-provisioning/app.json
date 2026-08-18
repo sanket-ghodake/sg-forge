@@ -1,0 +1,22 @@
+{
+  "id": "app_nexus_provisioning_01",
+  "slug": "nexus-provisioning",
+  "version": "1.4.0",
+  "name": "Nexus IT Provisioning",
+  "description": "Automated internal enterprise hardware asset allocation pipeline control engine.",
+  "developer": "Core Architecture Platform Infrastructure Team",
+  "entryPoint": "http://localhost:8081/web-ui",
+  "sandboxEntryPoint": "http://127.0.0.1:8081/web-ui",
+  "icon": "cpu-chip",
+  "routingMode": "iframe",
+  "database": {
+    "requiresIsolatedSchema": true,
+    "schemaName": "forge_nexus_provisioning"
+  },
+  "requiredBasePermissions": ["user.profile.read", "metadata.hierarchy.read"],
+  "targetRules": {
+    "verticals": ["core-tech-uuid-placeholder", "exec-uuid-placeholder"],
+    "designations": [],
+    "minJobLevel": 2
+  }
+}

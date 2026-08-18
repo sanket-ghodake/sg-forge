@@ -1,0 +1,88 @@
+# ==============================================================================
+# Git Attributes Configuration (Google / Amazon Enterprise Standard)
+# Auto-normalization of line endings, binary identification, and export controls
+# ==============================================================================
+
+# 1. Default Behavior
+* text=auto
+
+# 2. Linux / Unix Shell Scripts & Entrypoints (Strict LF)
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+entrypoint.sh text eol=lf
+run.sh text eol=lf
+Dockerfile* text eol=lf
+
+# 3. Windows Shell & Batch Scripts (Strict CRLF)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# 4. Source Code & Configuration Files (Strict LF)
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.sql text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.svg text eol=lf
+*.py text eol=lf
+*.go text eol=lf
+.env* text eol=lf
+.gitignore text eol=lf
+.dockerignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+
+# 5. Binary Media & Fonts (Preserve raw bytes)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.pdf binary
+
+# 6. Binary Archives & Executables
+*.tar.gz binary
+*.tgz binary
+*.zip binary
+*.7z binary
+*.rar binary
+*.exe binary
+*.bin binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.wasm binary
+
+# 7. Database Files (Binary)
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+*.dump binary
+*.rdb binary
+
+# 8. GitHub Linguist & Export Rules
+bun.lock linguist-generated=true
+bun.lockb binary
+test/dummy-data/* linguist-generated=true
+.github export-ignore
+.agents export-ignore
+.husky export-ignore
+.gemini export-ignore

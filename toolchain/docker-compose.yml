@@ -1,0 +1,91 @@
+services:
+  toolchain:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sgforge-toolchain:latest
+    container_name: sgforge-toolchain-runner
+    volumes:
+      - ..:/app
+      - sgforge-toolchain-node-modules:/app/node_modules
+      - sgforge-toolchain-frontend-modules:/app/core/src/frontend/node_modules
+      - sgforge-toolchain-next-cache:/app/core/src/frontend/.next
+    environment:
+      - DATABASE_URL=postgres://lifeos:change_me_db_password@sgforge-db-sanket:5432/org_db
+      - NODE_ENV=test
+    networks:
+      - sgforge-network
+
+  # Shortcuts for developers to run specific actions directly via docker-compose run
+  lint:
+    image: sgforge-toolchain:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/app
+      - sgforge-toolchain-node-modules:/app/node_modules
+    entrypoint: ["run-checks", "lint"]
+    networks:
+      - sgforge-network
+
+  format:
+    image: sgforge-toolchain:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/app
+      - sgforge-toolchain-node-modules:/app/node_modules
+    entrypoint: ["run-checks", "format"]
+    networks:
+      - sgforge-network
+
+  security:
+    image: sgforge-toolchain:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/app
+      - sgforge-toolchain-node-modules:/app/node_modules
+    entrypoint: ["run-checks", "security"]
+    networks:
+      - sgforge-network
+
+  test:
+    image: sgforge-toolchain:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/app
+      - sgforge-toolchain-node-modules:/app/node_modules
+    entrypoint: ["run-checks", "test"]
+    environment:
+      - DATABASE_URL=postgres://lifeos:change_me_db_password@sgforge-db-sanket:5432/org_db
+      - NODE_ENV=test
+    networks:
+      - sgforge-network
+
+  docs:
+    image: sgforge-toolchain:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/app
+      - sgforge-toolchain-node-modules:/app/node_modules
+    entrypoint: ["run-checks", "docs"]
+    networks:
+      - sgforge-network
+
+networks:
+  sgforge-network:
+    name: sgforge-network
+    external: true
+
+volumes:
+  sgforge-toolchain-node-modules:
+  sgforge-toolchain-frontend-modules:
+  sgforge-toolchain-next-cache:

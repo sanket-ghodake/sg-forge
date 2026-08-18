@@ -1,0 +1,60 @@
+# ==============================================================================
+# GitHub Copilot Ignore Configuration
+# Prevents sensitive files, massive dependencies, binaries and caches from being indexed
+# ==============================================================================
+
+# Dependencies & Isolated Runtimes
+node_modules/
+**/node_modules/
+portables/
+.node_env/
+.venv/
+__pycache__/
+
+# Build & Compilation Outputs
+.next/
+**/.next/
+dist/
+build/
+out/
+site/
+*.tsbuildinfo
+core/src/backend/dev-dashboard/dashboard.js
+
+# Sensitive Credentials & Keys
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+certs/
+ssl/
+
+# Database Files & Storage Volumes
+volume/
+*.sqlite
+*.sqlite3
+*.dump
+*.db
+
+# Large Mock Data & Test Logs
+test/coverage/
+coverage/
+test/dummy-data/
+test_output.log
+*.log
+
+# Internal Agent Graph State
+graphify-out/
+currently_working.md
+.caveman_state.json
+
+# Lockfiles & System
+bun.lock
+package-lock.json
+.DS_Store
+Thumbs.db
+.git/

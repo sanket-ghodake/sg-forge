@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Pre-Commit Validation Hook (Enterprise Standard)
+# ==============================================================================
+
+# Ensure execution from repo root
+cd "$(dirname "$0")/.."
+
+echo -e "\033[0;34m🔍 Executing pre-commit validation checklist...\033[0m"
+
+# Execute pre-commit validation suite
+if [ -f "./toolchain/run-precommit.sh" ]; then
+  bash ./toolchain/run-precommit.sh
+else
+  echo -e "\033[0;31m❌ Error: ./toolchain/run-precommit.sh not found!\033[0m"
+  exit 1
+fi

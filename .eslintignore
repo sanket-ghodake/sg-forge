@@ -1,0 +1,36 @@
+# ==============================================================================
+# ESLint Ignore Configuration
+# ==============================================================================
+
+node_modules/
+**/node_modules/
+portables/
+.node_env/
+.venv/
+__pycache__/
+
+.next/
+**/.next/
+dist/
+**/dist/
+build/
+**/build/
+out/
+**/out/
+site/
+.tsbuildinfo
+*.tsbuildinfo
+core/src/backend/dev-dashboard/dashboard.js
+core/src/frontend/public/sdk/forge-sdk.js
+
+coverage/
+test/coverage/
+.nyc_output/
+.precommit_container_logs/
+
+volume/
+graphify-out/
+.git/
+bun.lock
+package-lock.json
+*.min.js

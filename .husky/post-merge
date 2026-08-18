@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Post-Merge Hook (Enterprise Standard)
+# Notifies developers if lockfiles, schemas, or agent configs changed
+# ==============================================================================
+
+cd "$(dirname "$0")/.."
+
+# Check if bun.lock or package.json changed in the merge
+CHANGED_FILES=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD 2>/dev/null || true)
+
+if echo "$CHANGED_FILES" | grep -qE "(bun\.lock|package\.json)"; then
+  echo -e "\033[1;33m📦 Notice: Dependency definitions changed in this merge. You may need to run 'bun install'.\033[0m"
+fi
+
+if echo "$CHANGED_FILES" | grep -qE "(core/src/database/schema\.ts|drizzle\.config\.ts)"; then
+  echo -e "\033[1;33m🗄️ Notice: Database schema changed in this merge. You may need to run schema migrations.\033[0m"
+fi
+
+if echo "$CHANGED_FILES" | grep -qE "(\.agents/|AGENTS\.md|CLAUDE\.md|\.github/copilot-instructions\.md)"; then
+  echo -e "\033[0;36m🤖 Notice: Agent directives changed. Running synchronization...\033[0m"
+  if [ -f "./.agents/scripts/sync-agent-instructions.sh" ]; then
+    bash ./.agents/scripts/sync-agent-instructions.sh || true
+  fi
+fi
+
+exit 0

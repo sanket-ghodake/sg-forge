@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example Forge App - Sandbox Ledger</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg-primary: #090d16;
+      --bg-card: rgba(15, 23, 42, 0.45);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #ff007f;
+      --accent-gradient: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
+    }
+
+    html[data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-card: rgba(255, 255, 255, 0.7);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --border: rgba(0, 0, 0, 0.08);
+      --accent: #2563eb;
+      --accent-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    }
+
+    html[data-theme="solarized-dark"] {
+      --bg-primary: #002b36;
+      --bg-card: rgba(7, 54, 66, 0.65);
+      --text-primary: #839496;
+      --text-secondary: #586e75;
+      --border: rgba(255, 255, 255, 0.05);
+      --accent: #b58900;
+      --accent-gradient: linear-gradient(135deg, #b58900 0%, #cb4b16 100%);
+    }
+
+    html[data-theme="solarized-light"] {
+      --bg-primary: #fdf6e3;
+      --bg-card: rgba(238, 232, 213, 0.75);
+      --text-primary: #586e75;
+      --text-secondary: #93a1a1;
+      --border: rgba(0, 0, 0, 0.06);
+      --accent: #b58900;
+      --accent-gradient: linear-gradient(135deg, #b58900 0%, #cb4b16 100%);
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .accent-btn {
+      background: var(--accent-gradient);
+      box-shadow: 0 4px 14px 0 rgba(255, 0, 127, 0.25);
+    }
+    
+    .accent-text {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body class="p-6">
+  <!-- Loading & Authenticating overlay -->
+  <div id="auth-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#090d16]">
+    <div class="glass-card p-8 rounded-2xl flex flex-col items-center gap-4 max-w-sm text-center">
+      <div class="w-12 h-12 rounded-full border-4 border-t-[var(--accent)] border-white/10 animate-spin"></div>
+      <h3 class="font-bold text-sm">Authenticating Application Session</h3>
+      <p class="text-[11px] text-[var(--text-secondary)]">Exchanging secure token handshake with parent portal...</p>
+    </div>
+  </div>
+
+  <!-- Dynamic Dashboard Container -->
+  <div id="app-container" class="max-w-6xl mx-auto space-y-6 opacity-0 transition-opacity duration-300">
+
+    <!-- Header Section -->
+    <div class="glass-card p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background: var(--accent-gradient)">
+          ⚡
+        </div>
+        <div>
+          <h1 class="text-xl font-bold flex items-center gap-2">
+            <span>Core Sandbox Application</span>
+          </h1>
+          <p class="text-xs text-[var(--text-secondary)]">Isolated Forge Microservice running on Port 8090</p>
+        </div>
+      </div>
+
+      <!-- User Badge -->
+      <div id="user-badge" class="flex items-center gap-3 bg-black/20 p-2.5 px-4 rounded-xl border border-white/5">
+        <div class="text-right">
+          <p id="user-name" class="text-xs font-bold">...</p>
+          <p id="user-role" class="text-[9px] uppercase tracking-wider text-[var(--text-secondary)]">...</p>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs" id="user-avatar">
+          ..
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Telemetry Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="glass-card p-5 rounded-2xl">
+        <div class="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider font-semibold">Database Status</div>
+        <div class="text-xl font-bold mt-2 flex items-center gap-2 text-emerald-400">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>PostgreSQL Active</span>
+        </div>
+      </div>
+      <div class="glass-card p-5 rounded-2xl">
+        <div class="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider font-semibold">Ledger Entries</div>
+        <div class="text-2xl font-black mt-1" id="record-count">0</div>
+      </div>
+      <div class="glass-card p-5 rounded-2xl">
+        <div class="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider font-semibold">OAuth Status</div>
+        <div class="text-xl font-bold mt-2 text-indigo-400 flex items-center gap-1.5">
+          <span>🔒 SECURE TOKEN (NO COOKIES)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Input Panel -->
+      <div class="glass-card p-6 rounded-2xl space-y-4 h-fit">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+          <span>✍️</span> Add Ledger Entry
+        </h3>
+        <form id="ledger-form" class="space-y-4">
+          <div>
+            <label class="block text-[10px] font-bold uppercase mb-1.5 text-[var(--text-secondary)]">Label Name</label>
+            <input type="text" id="label" required placeholder="e.g. AWS Deployment" class="w-full text-xs p-3 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-[var(--accent)] text-white placeholder-white/20">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase mb-1.5 text-[var(--text-secondary)]">Description</label>
+            <textarea id="description" rows="3" placeholder="Server cloud nodes and deployment costs..." class="w-full text-xs p-3 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-[var(--accent)] text-white placeholder-white/20"></textarea>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase mb-1.5 text-[var(--text-secondary)]">Amount / Status</label>
+            <input type="text" id="amount" placeholder="e.g. $420.00" class="w-full text-xs p-3 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-[var(--accent)] text-white placeholder-white/20">
+          </div>
+          <button type="submit" class="accent-btn w-full py-3 text-white font-bold rounded-xl text-xs hover:opacity-90 transition-opacity mt-2">
+            Submit Record
+          </button>
+        </form>
+      </div>
+
+      <!-- Ledger Display -->
+      <div class="lg:col-span-2 glass-card p-6 rounded-2xl space-y-4">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] flex items-center gap-1.5">
+          <span>📊</span> Database Record Ledger
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-white/10 text-[9px] uppercase font-bold text-[var(--text-secondary)]">
+                <th class="pb-3">ID</th>
+                <th class="pb-3">Label</th>
+                <th class="pb-3">Description</th>
+                <th class="pb-3">Value</th>
+                <th class="pb-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-body" class="divide-y divide-white/5">
+              <!-- Rendered via JavaScript -->
+            </tbody>
+          </table>
+          <div id="no-records" class="text-center py-12 text-[var(--text-secondary)] text-xs hidden">
+            <span class="text-2xl block mb-2">📁</span>
+            No records found. Submit the form to write to your isolated Postgres DB!
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State values
+    let apiToken = '';
+    let userData = null;
+    let isExchanging = false;
+
+    // Dynamically resolve API route prefixes
+    const baseUrl = `${window.location.protocol}//${window.location.host}`;
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const slug = pathParts[0] === 'forge-apps' ? pathParts[1] : '';
+    const apiPrefix = slug ? `${baseUrl}/forge-apps/${slug}/api` : `${baseUrl}/api`;
+
+    // Resolve parent origin securely for origin validation
+    let parentOrigin = '';
+    if (document.referrer) {
+      try {
+        parentOrigin = new URL(document.referrer).origin;
+      } catch (e) {}
+    }
+    if ((parentOrigin === 'null' || !parentOrigin) && window.location.ancestorOrigins && window.location.ancestorOrigins.length > 0) {
+      parentOrigin = window.location.ancestorOrigins[0];
+    }
+
+    // Listen for global theme changes and auth payload from parent page postMessage
+    window.addEventListener('message', async (e) => {
+      if (!e.data) return;
+
+      // Security: Validate sender origin if we resolved it successfully
+      if (parentOrigin && parentOrigin !== 'null' && e.origin !== parentOrigin) {
+        console.warn('Blocked message event from unauthorized origin:', e.origin);
+        return;
+      }
+
+      // Handle theme change event
+      if (e.data.type === 'THEME_CHANGE') {
+        document.documentElement.setAttribute('data-theme', e.data.theme);
+      }
+
+      // Handle authentication payload
+      if (e.data.type === 'FORGE_AUTH_TOKEN') {
+        const { code, token, user } = e.data;
+        console.log('Received auth code from parent postMessage, executing handshake exchange...', code);
+        
+        const targetCode = code || token; // Support fallback representation
+        if (targetCode) {
+          await exchangeCodeForToken(targetCode);
+        } else {
+          showAuthError('Invalid or missing authentication credentials.');
+        }
+      }
+    });
+
+    // Exchange portal authorization code for local API access token
+    async function exchangeCodeForToken(code) {
+      if (isExchanging || apiToken) return;
+      isExchanging = true;
+      try {
+        const res = await fetch(`${apiPrefix}/auth`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        if (!res.ok) {
+          throw new Error(`Auth exchange failed: ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        apiToken = data.token;
+        userData = data.user;
+
+        // Clean URL path and query parameters
+        try {
+          const cleanUrl = window.location.origin + window.location.pathname.replace('/callback', '');
+          window.history.replaceState({}, document.title, cleanUrl);
+        } catch (e) {
+          console.error('Failed to clean URL:', e);
+        }
+
+        // Cache session locally
+        sessionStorage.setItem('forge_api_token', apiToken);
+        sessionStorage.setItem('forge_user_data', JSON.stringify(userData));
+
+        // Render UI
+        document.getElementById('user-name').textContent = userData.name;
+        document.getElementById('user-role').textContent = userData.role.replace('_', ' ');
+        const avatar = userData.name.split(' ').map(n => n[0]).join('');
+        document.getElementById('user-avatar').textContent = avatar;
+
+        // Fade in main dashboard and remove loading screen
+        document.getElementById('auth-overlay').classList.add('hidden');
+        document.getElementById('app-container').classList.remove('opacity-0');
+
+        // Fetch data
+        loadRecords();
+      } catch (err) {
+        console.error('Handshake failed:', err);
+        showAuthError(err.message);
+      } finally {
+        isExchanging = false;
+      }
+    }
+
+    async function redirectToSSO() {
+      try {
+        const res = await fetch(`${apiPrefix}/config`);
+        if (!res.ok) {
+          throw new Error('Failed to retrieve application SSO configurations.');
+        }
+        const config = await res.json();
+        
+        const state = 'sso_state_' + Math.random().toString(36).substring(2, 15);
+        const redirectUri = window.location.origin + '/callback';
+        
+        const authorizeUrl = new URL(config.portalSsoUrl);
+        authorizeUrl.searchParams.set('client_id', config.clientId);
+        authorizeUrl.searchParams.set('redirect_uri', redirectUri);
+        authorizeUrl.searchParams.set('state', state);
+        authorizeUrl.searchParams.set('response_type', 'code');
+        
+        window.location.href = authorizeUrl.toString();
+      } catch (err) {
+        console.error('SSO Redirect failed:', err);
+        showAuthError('Federated Sign-On failed to initialize: ' + err.message);
+      }
+    }
+
+    async function initSession() {
+      // 2026 Standards: If running inside an iframe, DO NOT automatically redirect to SSO.
+      // Wait for parent portal window to post the auth credentials securely.
+      if (window.self !== window.top) {
+        console.log('App running inside iframe, waiting for postMessage auth handshake from parent...');
+        setTimeout(() => {
+          if (!apiToken && !isExchanging) {
+            showAuthError('Handshake timeout: Did not receive secure credentials from parent portal.');
+          }
+        }, 5000);
+        return;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const codeFromUrl = urlParams.get('code');
+      
+      if (codeFromUrl) {
+        console.log('Found auth code in URL query parameters, executing handshake exchange immediately...', codeFromUrl);
+        await exchangeCodeForToken(codeFromUrl);
+        return;
+      }
+      
+      const storedToken = sessionStorage.getItem('forge_api_token');
+      const storedUser = sessionStorage.getItem('forge_user_data');
+      
+      if (storedToken && storedUser) {
+        console.log('Found existing session token. Verifying validity...');
+        try {
+          const res = await fetch(`${apiPrefix}/user`, {
+            headers: { 'Authorization': `Bearer ${storedToken}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            apiToken = storedToken;
+            userData = data.user || JSON.parse(storedUser);
+            
+            // Render UI
+            document.getElementById('user-name').textContent = userData.name;
+            document.getElementById('user-role').textContent = userData.role.replace('_', ' ');
+            const avatar = userData.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('user-avatar').textContent = avatar;
+
+            // Fade in main dashboard and remove loading screen
+            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('opacity-0');
+
+            // Fetch data
+            loadRecords();
+            return;
+          }
+        } catch (err) {
+          console.warn('Session verification check failed:', err);
+        }
+        // If we reach here, session is stale/invalid
+        sessionStorage.removeItem('forge_api_token');
+        sessionStorage.removeItem('forge_user_data');
+      }
+      
+      console.log('No active session. Redirecting to Portal for SSO...');
+      await redirectToSSO();
+    }
+
+    // Execute session initialization
+    initSession();
+
+    function showAuthError(message) {
+      document.getElementById('auth-overlay').innerHTML = `
+        <div class="glass-card p-8 rounded-2xl text-center max-w-sm">
+          <span class="text-3xl block mb-2">⚠️</span>
+          <h3 class="font-bold text-red-400 text-sm">Authentication Failed</h3>
+          <p class="text-[11px] text-[var(--text-secondary)] mt-2">${message}</p>
+          <p class="text-[10px] text-gray-500 mt-4">Please launch this app inside the SG Forge Portal canvas or authenticate via Portal SSO.</p>
+        </div>
+      `;
+    }
+
+    // Load ledger items from isolated database
+    async function loadRecords() {
+      if (!apiToken) return;
+      try {
+        const res = await fetch(`${apiPrefix}/records`, {
+          headers: { 'Authorization': `Bearer ${apiToken}` }
+        });
+        const data = await res.json();
+        const records = data.records || [];
+        
+        const body = document.getElementById('ledger-body');
+        const empty = document.getElementById('no-records');
+        
+        body.innerHTML = '';
+        document.getElementById('record-count').textContent = records.length;
+
+        if (records.length === 0) {
+          empty.classList.remove('hidden');
+          return;
+        }
+        empty.classList.add('hidden');
+
+        records.forEach(rec => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-white/5 transition-colors duration-150';
+          tr.innerHTML = `
+            <td class="py-3.5 font-mono text-[10px] text-indigo-400">#${rec.id}</td>
+            <td class="py-3.5 font-bold">${rec.label}</td>
+            <td class="py-3.5 text-[var(--text-secondary)]">${rec.description}</td>
+            <td class="py-3.5 font-mono text-emerald-400 font-bold">${rec.amount}</td>
+            <td class="py-3.5 text-right">
+              <button onclick="deleteRecord(${rec.id})" class="text-red-400 hover:text-red-300 font-semibold text-[10px] bg-red-500/10 px-2 py-1 rounded">Delete</button>
+            </td>
+          `;
+          body.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Failed to load ledger records:', err);
+      }
+    }
+
+    // Delete record from Postgres
+    async function deleteRecord(id) {
+      if (!apiToken) return;
+      if (!confirm('Are you sure you want to delete this record from the isolated database?')) return;
+      try {
+        const res = await fetch(`${apiPrefix}/records/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${apiToken}` }
+        });
+        if (res.ok) {
+          loadRecords();
+        }
+      } catch (err) {
+        console.error('Failed to delete record:', err);
+      }
+    }
+
+    // Submit new record to Postgres
+    document.getElementById('ledger-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!apiToken) return;
+
+      const label = document.getElementById('label').value;
+      const description = document.getElementById('description').value;
+      const amount = document.getElementById('amount').value;
+
+      try {
+        const res = await fetch(`${apiPrefix}/records`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiToken}`
+          },
+          body: JSON.stringify({ label, description, amount })
+        });
+        if (res.ok) {
+          document.getElementById('ledger-form').reset();
+          loadRecords();
+        }
+      } catch (err) {
+        console.error('Failed to save record:', err);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "name": "org-website",
+  "version": "0.1.0",
+  "description": "Modular Corporate Portal Engine",
+  "main": "index.js",
+  "type": "module",
+  "workspaces": [
+    "core",
+    "packages/*",
+    "sandbox/apps/*"
+  ],
+  "scripts": {
+    "setup": "bash scripts/portable/development/setup.sh",
+    "run-dev": "./run.sh portable dev",
+    "run-docker": "./run.sh docker dev",
+    "create-app": "bun scripts/create-forge-app.ts",
+    "test": "bun test test/unit test/integration",
+    "docs:dev": ".venv/bin/mkdocs serve",
+    "docs:build": ".venv/bin/mkdocs build",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.45.2",
+    "ioredis": "^5.11.1",
+    "iron-session": "^8.0.0",
+    "jose": "^5.2.0",
+    "lucide-react": "^1.20.0",
+    "pg": "^8.11.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "recharts": "^3.8.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.7",
+    "@jridgewell/resolve-uri": "^3.1.2",
+    "@jridgewell/trace-mapping": "^0.3.25",
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.20.0",
+    "bun-types": "^1.0.0",
+    "dependency-cruiser": "^16.2.0",
+    "drizzle-kit": "^0.31.10",
+    "husky": "^9.1.7",
+    "next": "^16.2.9",
+    "typescript": "^5.0.0"
+  }
+}

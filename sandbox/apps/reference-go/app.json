@@ -1,0 +1,24 @@
+{
+  "id": "reference-go",
+  "slug": "reference-go",
+  "version": "1.0.0",
+  "name": "Reference Go Application",
+  "description": "Golang external application proof of architecture.",
+  "developer": "SG Forge Core Division",
+  "entryPoint": "http://localhost:8086/",
+  "sandboxEntryPoint": "http://127.0.0.1:8086/",
+  "icon": "terminal",
+  "routingMode": "iframe",
+  "clientId": "client_reference_go",
+  "clientSecret": "secret_reference_go_dev_key",
+  "database": {
+    "requiresIsolatedSchema": true,
+    "schemaName": "forge_reference_go"
+  },
+  "requiredBasePermissions": ["user.profile.read", "user.manager.read"],
+  "targetRules": {
+    "verticals": ["all"],
+    "designations": [],
+    "minJobLevel": 1
+  }
+}

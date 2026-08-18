@@ -1,0 +1,20 @@
+{
+  "id": "app_telemetry_dashboard_dev",
+  "slug": "telemetry-dashboard",
+  "version": "1.0.0",
+  "name": "Telemetry Dashboard",
+  "description": "Decoupled micro-frontend application running inside the SG Forge sandboxed portal.",
+  "icon": "Layers",
+  "roles": ["super_admin", "admin", "user"],
+  "entryPoint": "http://localhost:8080",
+  "routingMode": "iframe",
+  "database": {
+    "requiresIsolatedSchema": true,
+    "schemaName": "forge_telemetry_dashboard"
+  },
+  "targetRules": {
+    "verticals": ["all"],
+    "designations": [],
+    "minJobLevel": 1
+  }
+}

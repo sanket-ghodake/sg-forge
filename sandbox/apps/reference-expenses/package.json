@@ -1,0 +1,17 @@
+{
+  "name": "reference-expenses",
+  "version": "1.0.0",
+  "description": "Reference Expenses Tracker sandbox app",
+  "main": "server.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run server.ts"
+  },
+  "dependencies": {
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "@types/pg": "^8.11.5"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "app_manager_ops_01",
+  "slug": "manager-operations",
+  "version": "1.0.0",
+  "name": "Manager Operations Dashboard",
+  "description": "Management intelligence, resource allocations, and team telemetry tools.",
+  "developer": "Enterprise Tools Division",
+  "entryPoint": "manager-operations",
+  "icon": "activity",
+  "routingMode": "local",
+  "targetRules": {
+    "verticals": ["all"],
+    "designations": [],
+    "minJobLevel": 3
+  }
+}

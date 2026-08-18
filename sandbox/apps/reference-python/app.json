@@ -1,0 +1,23 @@
+{
+  "id": "reference-python",
+  "slug": "reference-python",
+  "version": "1.0.0",
+  "name": "Reference Python Application",
+  "description": "Python/FastAPI external application proof of architecture.",
+  "developer": "SG Forge Core Division",
+  "entryPoint": "http://localhost:8087/",
+  "sandboxEntryPoint": "http://127.0.0.1:8087/",
+  "icon": "box",
+  "routingMode": "iframe",
+  "clientId": "client_reference_python",
+  "clientSecret": "secret_reference_python_dev_key",
+  "database": {
+    "requiresIsolatedSchema": false
+  },
+  "requiredBasePermissions": ["user.profile.read", "user.manager.read"],
+  "targetRules": {
+    "verticals": ["all"],
+    "designations": [],
+    "minJobLevel": 1
+  }
+}

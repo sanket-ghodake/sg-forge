@@ -1,0 +1,120 @@
+# ==============================================================================
+# Docker Ignore Configuration (Google / Amazon Enterprise Standard)
+# Keeps build contexts minimal, prevents credential leaks, and accelerates I/O
+# ==============================================================================
+
+# 1. Version Control & Agent Systems
+.git
+.gitignore
+.gitattributes
+.github
+.agents
+.gemini
+.husky
+.copilotignore
+.antigravityignore
+.graphifyignore
+.sqlfluffignore
+.editorconfig
+.prettierignore
+.eslintignore
+
+# 2. Local IDEs & Editor Artifacts
+.vscode
+.idea
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+.directory
+
+# 3. Dependencies & Build Artifacts (Installed/Built Inside Containers)
+**/node_modules
+**/.next
+**/dist
+**/out
+**/build
+**/.cache
+**/.sass-cache
+.turbo
+.vercel
+.parcel-cache
+*.tsbuildinfo
+*.d.ts.map
+core/src/backend/dev-dashboard/dashboard.js
+
+# 4. Local Runtimes & Isolated Virtual Environments
+portables
+.node_env
+.venv
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.benchmarks
+
+# 5. Security & Sensitive Files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.cer
+*.csr
+certs
+ssl
+volume/certs
+
+# 6. Documentation & Non-Runtime Project Artifacts
+docs
+site
+graphify-out
+currently_working.md
+mkdocs.yml
+AGENTS.md
+CLAUDE.md
+README.md
+
+# 7. Test Reports & Coverage
+coverage
+test/coverage
+.nyc_output
+.precommit_container_logs
+test/dummy-data
+
+# 8. Logs & Diagnostic Dumps
+logs
+tmp
+temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
+
+# 9. Persistent Storage Volumes & Local Database Dumps
+volume
+**/volume/*.db*
+*.sqlite
+*.sqlite3
+*.sqlite3-journal
+*.sqlite-wal
+*.sqlite-shm
+*.dump
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.rdb

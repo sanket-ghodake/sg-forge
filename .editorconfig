@@ -1,0 +1,40 @@
+# ==============================================================================
+# EditorConfig Configuration (Enterprise Standard)
+# http://editorconfig.org
+# ==============================================================================
+
+root = true
+
+# Default rules for all files
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Markdown files (allow trailing whitespace for hard breaks)
+[*.md]
+trim_trailing_whitespace = false
+
+# Windows Batch & Command scripts
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Python
+[*.py]
+indent_size = 4
+
+# Go
+[*.go]
+indent_style = tab
+indent_size = 4
+
+# Makefiles
+[Makefile]
+indent_style = tab
+
+# JSON and YAML
+[*.{json,yaml,yml}]
+indent_size = 2

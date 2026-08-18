@@ -1,0 +1,23 @@
+{
+  "id": "example-forge-app",
+  "slug": "example-forge-app",
+  "version": "1.0.0",
+  "name": "Isolated Example App",
+  "description": "An isolated Forge App running in a separate container on port 8090 with its own DB.",
+  "developer": "SG Forge Senior Architecture team",
+  "entryPoint": "http://example-forge-app:8090/",
+  "sandboxEntryPoint": "http://localhost:8090/",
+  "icon": "cpu",
+  "routingMode": "standalone",
+  "clientId": "client_example_forge_app",
+  "clientSecret": "secret_example_forge_app",
+  "database": {
+    "requiresIsolatedSchema": false
+  },
+  "requiredBasePermissions": ["user.profile.read"],
+  "targetRules": {
+    "verticals": ["all"],
+    "designations": [],
+    "minJobLevel": 1
+  }
+}

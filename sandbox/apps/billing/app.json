@@ -1,0 +1,15 @@
+{
+  "id": "billing",
+  "slug": "billing",
+  "name": "Billing operations",
+  "description": "Enterprise billing, invoice tracker, and transaction logging engine",
+  "icon": "CreditCard",
+  "roles": ["super_admin", "admin"],
+  "entryPoint": "index.tsx",
+  "routingMode": "react-component",
+  "ui": {
+    "themePolicy": "inherit",
+    "densityPolicy": "inherit",
+    "fontPolicy": "inherit"
+  }
+}

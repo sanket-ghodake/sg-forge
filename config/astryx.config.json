@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "framework": "next16-react19",
+  "styling": "stylex-vanilla-css",
+  "aiEnabled": true,
+  "mcpServer": {
+    "enabled": true,
+    "port": 8420,
+    "protocol": "mcp-v1"
+  },
+  "componentsDir": "packages/ui/src/astryx",
+  "tokensDir": "core/src/theme/astryx",
+  "updatedAt": "2026-08-06T02:32:25.555Z"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "app_apex_expenses_02",
+  "slug": "apex-expenses",
+  "version": "2.1.0",
+  "name": "Apex Expense Claims",
+  "description": "Corporate expense submission ledger linked directly to organizational reporting managers.",
+  "developer": "FinTech Platform Division",
+  "entryPoint": "http://localhost:8082/dashboard",
+  "sandboxEntryPoint": "http://127.0.0.1:8082/dashboard",
+  "icon": "credit-card",
+  "routingMode": "iframe",
+  "database": {
+    "requiresIsolatedSchema": true,
+    "schemaName": "forge_apex_expenses"
+  },
+  "requiredBasePermissions": ["user.profile.read", "user.manager.read"],
+  "targetRules": {
+    "verticals": ["all"],
+    "designations": [],
+    "minJobLevel": 1
+  }
+}

@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  example-forge-app-db:
+    image: postgres:15-alpine
+    container_name: example-forge-app-db
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: example_forge_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - app-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d example_forge_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  example-forge-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: example-forge-app
+    depends_on:
+      example-forge-app-db:
+        condition: service_healthy
+    ports:
+      - "8090:8090"
+    environment:
+      - DATABASE_URL=postgres://app_user:app_password@example-forge-app-db:5432/example_forge_db
+      - PORT=8090
+      - PORTAL_INTERNAL_URL=http://app:3001
+      - CLIENT_ID=client_example_forge_app
+      - CLIENT_SECRET=secret_example_forge_app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+
+networks:
+  default:
+    name: sgforge-network
+    external: true
+
+volumes:
+  app-db-data:

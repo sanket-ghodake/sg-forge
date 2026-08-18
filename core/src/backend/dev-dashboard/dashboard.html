@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SG Forge DevCenter // Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgMain: 'var(--bg-main)',
+            bgGlow: 'var(--bg-glow)',
+            bgSidebar: 'var(--bg-sidebar)',
+            bgCard: 'var(--bg-card)',
+            bgCardHover: 'var(--bg-card-hover)',
+            bgHeader: 'var(--bg-header)',
+            bgTh: 'var(--bg-th)',
+            bgDbSidebar: 'var(--bg-db-sidebar)',
+            bgTextarea: 'var(--bg-textarea)',
+            bgConsole: 'var(--bg-console)',
+            bgLogHeader: 'var(--bg-log-header)',
+            bgLogDetails: 'var(--bg-log-details)',
+            borderColor: 'var(--border-color)',
+            borderColorGlow: 'var(--border-color-glow)',
+            textMain: 'var(--text-main)',
+            textMuted: 'var(--text-muted)',
+            primary: 'var(--primary)',
+            primaryHover: 'var(--primary-hover)',
+            primaryGlow: 'var(--primary-glow)',
+            success: 'var(--success)',
+            successGlow: 'var(--success-glow)',
+            warning: 'var(--warning)',
+            warningGlow: 'var(--warning-glow)',
+            error: 'var(--error)',
+            errorGlow: 'var(--error-glow)',
+            accent: 'var(--accent)',
+            sidebarHover: 'var(--sidebar-hover)',
+            sidebarActive: 'var(--sidebar-active)',
+            sidebarActiveText: 'var(--sidebar-active-text)',
+            tableRowHover: 'var(--table-row-hover)',
+            inputBg: 'var(--input-bg)',
+            statusPillBg: 'var(--status-pill-bg)',
+            textConsole: 'var(--text-console)',
+            textConsoleMuted: 'var(--text-console-muted)',
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="/dashboard.css">
+  <script src="/dashboard.js" defer></script>
+</head>
+<body class="bg-bgMain text-textMain min-h-screen font-sans antialiased overflow-hidden">
+  <div id="root"></div>
+</body>
+</html>

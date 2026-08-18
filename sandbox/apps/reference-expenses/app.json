@@ -1,0 +1,24 @@
+{
+  "id": "reference-expenses",
+  "slug": "reference-expenses",
+  "version": "1.0.0",
+  "name": "Reference Expenses Tracker",
+  "description": "Enterprise expense submission, monitoring, and validation module.",
+  "developer": "SG Forge Core Division",
+  "entryPoint": "http://localhost:8085/",
+  "sandboxEntryPoint": "http://127.0.0.1:8085/",
+  "icon": "credit-card",
+  "routingMode": "iframe",
+  "clientId": "client_reference_expenses",
+  "clientSecret": "secret_reference_expenses_dev_key",
+  "database": {
+    "requiresIsolatedSchema": true,
+    "schemaName": "forge_reference_expenses"
+  },
+  "requiredBasePermissions": ["user.profile.read", "user.manager.read"],
+  "targetRules": {
+    "verticals": ["all"],
+    "designations": [],
+    "minJobLevel": 1
+  }
+}

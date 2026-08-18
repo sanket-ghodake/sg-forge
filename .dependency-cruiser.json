@@ -1,0 +1,43 @@
+{
+  "forbidden": [
+    {
+      "name": "no-circular",
+      "severity": "error",
+      "comment": "Circular dependencies are not allowed as they make the code harder to reason about and refactor.",
+      "from": {},
+      "to": {
+        "circular": true
+      }
+    },
+    {
+      "name": "sandbox-app-isolation",
+      "severity": "error",
+      "comment": "Sandbox applications must not import from the core backend, database, or frontend directly to preserve sandbox boundaries. They must use the @packages/sdk.",
+      "from": {
+        "path": "^sandbox/apps/[^/]+/"
+      },
+      "to": {
+        "path": "^core/src/"
+      }
+    },
+    {
+      "name": "sandbox-app-isolation-alias",
+      "severity": "error",
+      "comment": "Sandbox applications must not import using core aliases (@backend, @database, @frontend) to preserve boundaries.",
+      "from": {
+        "path": "^sandbox/apps/[^/]+/"
+      },
+      "to": {
+        "path": "^core/src/backend|^core/src/database|^core/src/frontend"
+      }
+    }
+  ],
+  "options": {
+    "doNotFollow": {
+      "path": "node_modules"
+    },
+    "tsConfig": {
+      "fileName": "tsconfig.json"
+    }
+  }
+}

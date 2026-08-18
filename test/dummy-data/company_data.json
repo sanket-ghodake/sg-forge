@@ -1,0 +1,943 @@
+{
+  "subsidiaries": [
+    {
+      "name": "SG Forge Ltd"
+    }
+  ],
+  "verticals": [
+    {
+      "name": "Executive"
+    },
+    {
+      "name": "Engineering"
+    },
+    {
+      "name": "Product Management"
+    },
+    {
+      "name": "Sales & Operations"
+    },
+    {
+      "name": "Human Resources"
+    },
+    {
+      "name": "Finance"
+    }
+  ],
+  "jobLevels": [
+    {
+      "name": "L12 CEO"
+    },
+    {
+      "name": "L10 VP of Engineering"
+    },
+    {
+      "name": "L10 VP of Product"
+    },
+    {
+      "name": "L10 VP of Operations"
+    },
+    {
+      "name": "L8 Director of Engineering"
+    },
+    {
+      "name": "L8 Director of Product"
+    },
+    {
+      "name": "L8 Director of Operations"
+    },
+    {
+      "name": "L8 Director of HR"
+    },
+    {
+      "name": "L8 Director of Finance"
+    },
+    {
+      "name": "L6 Engineering Manager"
+    },
+    {
+      "name": "L6 Product Manager"
+    },
+    {
+      "name": "L6 Operations Manager"
+    },
+    {
+      "name": "L6 Sales Manager"
+    },
+    {
+      "name": "L6 HR Manager"
+    },
+    {
+      "name": "L6 Finance Manager"
+    },
+    {
+      "name": "L5 Senior Software Engineer"
+    },
+    {
+      "name": "L5 Senior Product Specialist"
+    },
+    {
+      "name": "L5 Senior Sales Executive"
+    },
+    {
+      "name": "L5 Senior Operations Specialist"
+    },
+    {
+      "name": "L4 Software Engineer II"
+    },
+    {
+      "name": "L4 Product Analyst"
+    },
+    {
+      "name": "L4 Operations Analyst"
+    },
+    {
+      "name": "L3 Software Engineer I"
+    },
+    {
+      "name": "L3 Associate Analyst"
+    }
+  ],
+  "employees": [
+    {
+      "eid": "E0001",
+      "name": "Aarav",
+      "email": "superadmin1@sgforge.com",
+      "role": "super_admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0011",
+      "name": "Ananya",
+      "email": "superadmin2@sgforge.com",
+      "role": "super_admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0002",
+      "name": "Vihaan",
+      "email": "it-admin@sgforge.com",
+      "role": "admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0012",
+      "name": "Ishaan",
+      "email": "hr-admin@sgforge.com",
+      "role": "admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0013",
+      "name": "Krishna",
+      "email": "finance-admin@sgforge.com",
+      "role": "admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0014",
+      "name": "Arjun",
+      "email": "security-admin@sgforge.com",
+      "role": "admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0015",
+      "name": "Diya",
+      "email": "ops-admin@sgforge.com",
+      "role": "admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0016",
+      "name": "Priya",
+      "email": "support-admin@sgforge.com",
+      "role": "admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0017",
+      "name": "Riya",
+      "email": "audit-admin@sgforge.com",
+      "role": "read_only_admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0018",
+      "name": "Aadhya",
+      "email": "dev-admin@sgforge.com",
+      "role": "admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0019",
+      "name": "Kavya",
+      "email": "provision-admin@sgforge.com",
+      "role": "admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0020",
+      "name": "Kabir",
+      "email": "billing-admin@sgforge.com",
+      "role": "admin",
+      "designation": "",
+      "vertical": "",
+      "subsidiary": "",
+      "managerEid": null
+    },
+    {
+      "eid": "E0003",
+      "name": "Sundar Pichai",
+      "email": "sundar.pichai@sgforge.com",
+      "role": "user",
+      "designation": "L12 CEO",
+      "vertical": "Executive",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": null
+    },
+    {
+      "eid": "E0004",
+      "name": "Demis Hassabis",
+      "email": "demis.hassabis@sgforge.com",
+      "role": "user",
+      "designation": "L10 VP of DeepMind",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0003"
+    },
+    {
+      "eid": "E0025",
+      "name": "Prabhakar Raghavan",
+      "email": "prabhakar.raghavan@sgforge.com",
+      "role": "user",
+      "designation": "L10 VP of Search",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0003"
+    },
+    {
+      "eid": "E0026",
+      "name": "Thomas Kurian",
+      "email": "thomas.kurian@sgforge.com",
+      "role": "user",
+      "designation": "L10 VP of Cloud",
+      "vertical": "Sales & Operations",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0003"
+    },
+    {
+      "eid": "E0022",
+      "name": "Ruth Porat",
+      "email": "ruth.porat@sgforge.com",
+      "role": "user",
+      "designation": "L10 CFO & President",
+      "vertical": "Finance",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0003"
+    },
+    {
+      "eid": "E0008",
+      "name": "Jeff Dean",
+      "email": "jeff.dean@sgforge.com",
+      "role": "user",
+      "designation": "L8 Director of Research",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0004"
+    },
+    {
+      "eid": "E0009",
+      "name": "Sanjay Ghemawat",
+      "email": "sanjay@sgforge.com",
+      "role": "user",
+      "designation": "L8 Director of Systems",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0004"
+    },
+    {
+      "eid": "E0010",
+      "name": "Ben Gomes",
+      "email": "ben.gomes@sgforge.com",
+      "role": "user",
+      "designation": "L8 Director of Search Experience",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0025"
+    },
+    {
+      "eid": "E0021",
+      "name": "Urs Hölzle",
+      "email": "urs.holzle@sgforge.com",
+      "role": "user",
+      "designation": "L8 Director of Infrastructure",
+      "vertical": "Sales & Operations",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0026"
+    },
+    {
+      "eid": "E0023",
+      "name": "Fiona Cicconi",
+      "email": "fiona.cicconi@sgforge.com",
+      "role": "user",
+      "designation": "L8 Director of People Ops",
+      "vertical": "Human Resources",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0022"
+    },
+    {
+      "eid": "E0005",
+      "name": "Diane Greene",
+      "email": "diane.greene@sgforge.com",
+      "role": "user",
+      "designation": "L6 Cloud Manager",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0021"
+    },
+    {
+      "eid": "E0027",
+      "name": "Eric Schmidt",
+      "email": "eric.schmidt@sgforge.com",
+      "role": "user",
+      "designation": "L6 Tech Ops Manager",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0021"
+    },
+    {
+      "eid": "E0028",
+      "name": "Marissa Mayer",
+      "email": "marissa.mayer@sgforge.com",
+      "role": "user",
+      "designation": "L6 Search UI Manager",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0010"
+    },
+    {
+      "eid": "E0029",
+      "name": "Susan Wojcicki",
+      "email": "susan.wojcicki@sgforge.com",
+      "role": "user",
+      "designation": "L6 Ads Manager",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0010"
+    },
+    {
+      "eid": "E0030",
+      "name": "Amit Singhal",
+      "email": "amit.singhal@sgforge.com",
+      "role": "user",
+      "designation": "L6 Ranking Manager",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0010"
+    },
+    {
+      "eid": "E0031",
+      "name": "Blaise Agüera",
+      "email": "blaise@sgforge.com",
+      "role": "user",
+      "designation": "L6 ML Research Manager",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0008"
+    },
+    {
+      "eid": "E0032",
+      "name": "Ilya Sutskever",
+      "email": "ilya.sutskever@sgforge.com",
+      "role": "user",
+      "designation": "L6 Deep Learning Manager",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0008"
+    },
+    {
+      "eid": "E0033",
+      "name": "Corinna Cortes",
+      "email": "corinna.cortes@sgforge.com",
+      "role": "user",
+      "designation": "L6 NY Research Manager",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0009"
+    },
+    {
+      "eid": "E0034",
+      "name": "Hal Varian",
+      "email": "hal.varian@sgforge.com",
+      "role": "user",
+      "designation": "L6 Chief Economist Manager",
+      "vertical": "Finance",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0023"
+    },
+    {
+      "eid": "E0006",
+      "name": "Geoffrey Hinton",
+      "email": "geoff.hinton@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Research Scientist",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0032"
+    },
+    {
+      "eid": "E0007",
+      "name": "Yann LeCun",
+      "email": "yann.lecun@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Scientist",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0032"
+    },
+    {
+      "eid": "E0035",
+      "name": "Yoshua Bengio",
+      "email": "yoshua.bengio@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Scientist",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0032"
+    },
+    {
+      "eid": "E0036",
+      "name": "Chris Manning",
+      "email": "chris.manning@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Scientist",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0031"
+    },
+    {
+      "eid": "E0037",
+      "name": "Fei-Fei Li",
+      "email": "feifei.li@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Scientist",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0031"
+    },
+    {
+      "eid": "E0038",
+      "name": "Andrej Karpathy",
+      "email": "andrej.karpathy@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Engineer",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0032"
+    },
+    {
+      "eid": "E0039",
+      "name": "Ian Goodfellow",
+      "email": "ian.goodfellow@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Engineer",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0032"
+    },
+    {
+      "eid": "E0040",
+      "name": "Andrew Ng",
+      "email": "andrew.ng@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Scientist",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0028"
+    },
+    {
+      "eid": "E0041",
+      "name": "Sebastian Thrun",
+      "email": "sebastian.thrun@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Scientist",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0028"
+    },
+    {
+      "eid": "E0042",
+      "name": "Guido van Rossum",
+      "email": "guido@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Engineer",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0005"
+    },
+    {
+      "eid": "E0043",
+      "name": "Bjarne Stroustrup",
+      "email": "bjarne@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Engineer",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0027"
+    },
+    {
+      "eid": "E0044",
+      "name": "Ken Thompson",
+      "email": "ken@sgforge.com",
+      "role": "user",
+      "designation": "L5 Staff Engineer",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0033"
+    },
+    {
+      "eid": "E0045",
+      "name": "Aarav",
+      "email": "aarav.45@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0041"
+    },
+    {
+      "eid": "E0046",
+      "name": "Vihaan",
+      "email": "vihaan.46@sgforge.com",
+      "role": "user",
+      "designation": "L3 Associate Analyst",
+      "vertical": "Sales & Operations",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0026"
+    },
+    {
+      "eid": "E0047",
+      "name": "Aditya",
+      "email": "aditya.47@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0040"
+    },
+    {
+      "eid": "E0048",
+      "name": "Sai",
+      "email": "sai.48@sgforge.com",
+      "role": "user",
+      "designation": "L4 Product Analyst",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0030"
+    },
+    {
+      "eid": "E0049",
+      "name": "Ishaan",
+      "email": "ishaan.49@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0040"
+    },
+    {
+      "eid": "E0050",
+      "name": "Krishna",
+      "email": "krishna.50@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0039"
+    },
+    {
+      "eid": "E0051",
+      "name": "Arjun",
+      "email": "arjun.51@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0039"
+    },
+    {
+      "eid": "E0052",
+      "name": "Kabir",
+      "email": "kabir.52@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0042"
+    },
+    {
+      "eid": "E0053",
+      "name": "Reyansh",
+      "email": "reyansh.53@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0006"
+    },
+    {
+      "eid": "E0054",
+      "name": "Aryan",
+      "email": "aryan.54@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0042"
+    },
+    {
+      "eid": "E0055",
+      "name": "Aarush",
+      "email": "aarush.55@sgforge.com",
+      "role": "user",
+      "designation": "L4 Operations Analyst",
+      "vertical": "Sales & Operations",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0027"
+    },
+    {
+      "eid": "E0056",
+      "name": "Vivaan",
+      "email": "vivaan.56@sgforge.com",
+      "role": "user",
+      "designation": "L4 Operations Analyst",
+      "vertical": "Human Resources",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0023"
+    },
+    {
+      "eid": "E0057",
+      "name": "Pranav",
+      "email": "pranav.57@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0040"
+    },
+    {
+      "eid": "E0058",
+      "name": "Rohan",
+      "email": "rohan.58@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0035"
+    },
+    {
+      "eid": "E0059",
+      "name": "Dev",
+      "email": "dev.59@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0038"
+    },
+    {
+      "eid": "E0060",
+      "name": "Rahul",
+      "email": "rahul.60@sgforge.com",
+      "role": "user",
+      "designation": "L4 Operations Analyst",
+      "vertical": "Finance",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0034"
+    },
+    {
+      "eid": "E0061",
+      "name": "Karan",
+      "email": "karan.61@sgforge.com",
+      "role": "user",
+      "designation": "L4 Product Analyst",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0028"
+    },
+    {
+      "eid": "E0062",
+      "name": "Siddharth",
+      "email": "siddharth.62@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0036"
+    },
+    {
+      "eid": "E0063",
+      "name": "Aman",
+      "email": "aman.63@sgforge.com",
+      "role": "user",
+      "designation": "L3 Associate Analyst",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0029"
+    },
+    {
+      "eid": "E0064",
+      "name": "Rishi",
+      "email": "rishi.64@sgforge.com",
+      "role": "user",
+      "designation": "L3 Associate Analyst",
+      "vertical": "Sales & Operations",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0026"
+    },
+    {
+      "eid": "E0065",
+      "name": "Neil",
+      "email": "neil.65@sgforge.com",
+      "role": "user",
+      "designation": "L3 Associate Analyst",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0030"
+    },
+    {
+      "eid": "E0066",
+      "name": "Yash",
+      "email": "yash.66@sgforge.com",
+      "role": "user",
+      "designation": "L4 Operations Analyst",
+      "vertical": "Human Resources",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0023"
+    },
+    {
+      "eid": "E0067",
+      "name": "Dhruv",
+      "email": "dhruv.67@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0043"
+    },
+    {
+      "eid": "E0068",
+      "name": "Ansh",
+      "email": "ansh.68@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0007"
+    },
+    {
+      "eid": "E0069",
+      "name": "Kunwar",
+      "email": "kunwar.69@sgforge.com",
+      "role": "user",
+      "designation": "L4 Product Analyst",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0030"
+    },
+    {
+      "eid": "E0070",
+      "name": "Shaurya",
+      "email": "shaurya.70@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0035"
+    },
+    {
+      "eid": "E0071",
+      "name": "Kshitiz",
+      "email": "kshitiz.71@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0006"
+    },
+    {
+      "eid": "E0072",
+      "name": "Tushar",
+      "email": "tushar.72@sgforge.com",
+      "role": "user",
+      "designation": "L4 Operations Analyst",
+      "vertical": "Sales & Operations",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0005"
+    },
+    {
+      "eid": "E0073",
+      "name": "Ayush",
+      "email": "ayush.73@sgforge.com",
+      "role": "user",
+      "designation": "L4 Operations Analyst",
+      "vertical": "Human Resources",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0023"
+    },
+    {
+      "eid": "E0074",
+      "name": "Madhav",
+      "email": "madhav.74@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0035"
+    },
+    {
+      "eid": "E0075",
+      "name": "Kartik",
+      "email": "kartik.75@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0036"
+    },
+    {
+      "eid": "E0076",
+      "name": "Ganesh",
+      "email": "ganesh.76@sgforge.com",
+      "role": "user",
+      "designation": "L4 Product Analyst",
+      "vertical": "Product Management",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0030"
+    },
+    {
+      "eid": "E0077",
+      "name": "Sanjay",
+      "email": "sanjay.77@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0040"
+    },
+    {
+      "eid": "E0078",
+      "name": "Suresh",
+      "email": "suresh.78@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0036"
+    },
+    {
+      "eid": "E0079",
+      "name": "Ramesh",
+      "email": "ramesh.79@sgforge.com",
+      "role": "user",
+      "designation": "L3 Software Engineer I",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0038"
+    },
+    {
+      "eid": "E0080",
+      "name": "Vijay",
+      "email": "vijay.80@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0041"
+    },
+    {
+      "eid": "E0081",
+      "name": "Anil",
+      "email": "anil.81@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0041"
+    },
+    {
+      "eid": "E0082",
+      "name": "Sunil",
+      "email": "sunil.82@sgforge.com",
+      "role": "user",
+      "designation": "L3 Associate Analyst",
+      "vertical": "Sales & Operations",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0021"
+    },
+    {
+      "eid": "E0083",
+      "name": "Rajesh",
+      "email": "rajesh.83@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0039"
+    },
+    {
+      "eid": "E0084",
+      "name": "Sameer",
+      "email": "sameer.84@sgforge.com",
+      "role": "user",
+      "designation": "L4 Operations Analyst",
+      "vertical": "Sales & Operations",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0027"
+    },
+    {
+      "eid": "E0085",
+      "name": "Amit",
+      "email": "amit.85@sgforge.com",
+      "role": "user",
+      "designation": "L4 Software Engineer II",
+      "vertical": "Engineering",
+      "subsidiary": "SG Forge Ltd",
+      "managerEid": "E0006"
+    }
+  ]
+}

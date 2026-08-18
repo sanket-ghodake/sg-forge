@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@backend/*": ["core/src/backend/*"],
+      "@database/*": ["core/src/database/*"],
+      "@frontend/*": ["core/src/frontend/*"],
+      "@apps/*": ["sandbox/apps/*"],
+      "@sdk/*": ["packages/sdk/*"],
+      "@test/*": ["test/*"]
+    },
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "types": ["bun-types"]
+  },
+  "include": [
+    "core/src/**/*.ts",
+    "core/src/**/*.tsx",
+    "packages/**/*.ts",
+    "test/**/*.ts",
+    "test/**/*.tsx"
+  ],
+  "exclude": ["node_modules", "portables", ".next", "dist", "build"]
+}

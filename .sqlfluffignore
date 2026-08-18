@@ -1,0 +1,11 @@
+# ==============================================================================
+# SQLFluff Ignore Configuration
+# ==============================================================================
+
+# Ignore Drizzle migrations and generated SQL
+core/src/database/migrations/**
+volume/**
+docker/**/init-db.sql
+node_modules/**
+portables/**
+.venv/**

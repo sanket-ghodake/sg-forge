@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Commit Message Validation Hook (Conventional Commits Standard)
+# ==============================================================================
+
+COMMIT_MSG_FILE="$1"
+FIRST_LINE=$(head -n 1 "$COMMIT_MSG_FILE")
+
+# Allow merge commits, squash commits, or revert commits
+if [[ "$FIRST_LINE" =~ ^(Merge|Revert|Apply) ]]; then
+  exit 0
+fi
+
+# Allow automated release commits
+if [[ "$FIRST_LINE" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+  exit 0
+fi
+
+# Conventional Commit Regex pattern:
+# type(scope?): description
+CONVENTIONAL_PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_.-]+\))?!?: .+$"
+
+if ! [[ "$FIRST_LINE" =~ $CONVENTIONAL_PATTERN ]]; then
+  echo -e "\033[0;31m❌ Invalid commit message format!\033[0m"
+  echo -e "\033[1;33mMessage:\033[0m '$FIRST_LINE'"
+  echo -e "\n\033[0;36mCommit message must follow Conventional Commits specification:\033[0m"
+  echo -e "  <type>(<optional scope>): <description>"
+  echo -e "\n\033[0;32mAllowed types:\033[0m"
+  echo -e "  feat     : A new feature"
+  echo -e "  fix      : A bug fix"
+  echo -e "  docs     : Documentation only changes"
+  echo -e "  style    : Changes that do not affect code meaning (formatting, etc)"
+  echo -e "  refactor : Code change that neither fixes a bug nor adds a feature"
+  echo -e "  perf     : Code change that improves performance"
+  echo -e "  test     : Adding missing tests or correcting existing tests"
+  echo -e "  build    : Changes that affect the build system or dependencies"
+  echo -e "  ci       : Changes to CI configuration files and scripts"
+  echo -e "  chore    : Other changes that don't modify src or test files"
+  echo -e "\n\033[0;32mExamples:\033[0m"
+  echo -e "  feat(auth): implement case-insensitive user login"
+  echo -e "  fix(proxy): resolve SSE stream buffer timeout"
+  echo -e "  chore(config): update ignore and attributes rules"
+  exit 1
+fi
+
+# Check maximum line length for header (industry standard <= 100 characters)
+if [ ${#FIRST_LINE} -gt 100 ]; then
+  echo -e "\033[0;31m❌ Commit message title is too long (${#FIRST_LINE} chars). Maximum allowed is 100 characters.\033[0m"
+  exit 1
+fi
+
+exit 0
