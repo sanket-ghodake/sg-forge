@@ -17,4 +17,5 @@ Before performing code review or audits, read:
 4. **Token-Efficient Feedback**: One-line review output: `[file#line] [severity]: [problem]. [fix].`
 5. **Comment & Doc Audit**: Reject PRs/changes missing file top headers, function docstrings, or necessary block explanations.
 6. **Stale Code & Doc Audit**: Audit for loose root scratch files, tracked generated build artifacts, unindexed markdown docs in `mkdocs.yml`, and unused exports using FOSS tools (`knip`, `depcruise`, `run-precommit.sh`).
+7. **Zero Host Install & Toolchain Portables**: Never install audit tools on host machine. Use repo portables (`portables/bin/*`), `./.venv/bin/*`, and Dockerized toolchain (`./run.sh toolchain ...`) exclusively.
 

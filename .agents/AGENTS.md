@@ -3,7 +3,7 @@
 ## MANDATORY CORE DIRECTIVES
 1. **Code & Doc Preservation**: NEVER remove any code block or documentation without detailed analysis and explicit technical justification.
 2. **Bash**: Prefix all bash execution with `rtk` (e.g. `rtk git status`, `rtk docker ps`, `rtk bun test`). Chains use `rtk`: `rtk git add . && rtk git commit`
-3. **Environments & Zero Host Install**: ZERO package installs on host machine (`apt-get`, `npm -g`, `pip`, `brew`). Use standalone repo runtimes ONLY: Bun (`bun`, `portables/bun/bin/bun`), `./.venv/bin/python3`, `./.venv/bin/mkdocs`, `portables/`, or Docker (`./run.sh docker ...` / `./run.sh toolchain ...`). Never system runtimes.
+3. **Zero Host Install Directive & Mandatory Portable Usage**: NEVER EVER install anything on developer's host machine (`apt-get`, `npm -g`, `pip`, `brew`, global binaries). ZERO host system modification. Use standalone repo runtimes and portable binaries ONLY: Bun (`bun`, `portables/bun/bin/bun`), `./.venv/bin/python3`, `./.venv/bin/mkdocs`, `.node_env/bin/node`, or `portables/bin/*` (`scc`, `lizard`, `tree`, `hyperfine`, `astryx`, `caveman`). If any new tool/runtime is required, bundle it strictly inside `portables/` or Docker (`./run.sh docker ...` / `./run.sh toolchain ...`), never on host.
 4. **Tech Stack Baseline (2026)**: Node 24 LTS / Bun 1.x, Next.js 16, React 19, TypeScript 5, Drizzle ORM.
 5. **Command Safety**: NEVER run heavy/time-consuming commands (docker builds, full test suites). Provide command to user.
 6. **Git Policy**: DO NOT commit automatically (`git commit`). Only stage/commit when explicitly requested.

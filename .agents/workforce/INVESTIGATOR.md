@@ -14,3 +14,4 @@ Before beginning investigation, read:
 3. **AST Inspection**: Inspect class, function, and module interfaces completely before returning trace results.
 4. **Root Discipline**: Keep root clean. Place investigation findings/logs in `.agents/` or `docs/`, never in root.
 5. **Output Format**: Provide node paths, source locations (`file:///path/to/file#L10-L25`), and precise call graph.
+6. **Zero Host Install & Portables**: Use repository-bundled portables in `portables/bin/` (`scc`, `lizard`, `tree`, `hyperfine`, `astryx`, `caveman`) for code counting, complexity, and analysis. NEVER invoke host package managers (`apt`, `npm -g`, `pip`, `brew`).
