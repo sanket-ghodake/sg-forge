@@ -58,7 +58,7 @@ Runs application services natively on your host machine using workspace-isolated
     ./run.sh portable dev
     ```
 
-For detailed instructions, see the [Installation & Setup Guide](file:///home/sanket/Desktop/Sanket/org_website/docs/guides/installation.md) and the [Orchestration Scripts Guide](file:///home/sanket/Desktop/Sanket/org_website/scripts/README.md).
+For detailed instructions, see the [Zero-Host Portable Setup Guide](file:///home/sanket/Desktop/Sanket/org_website/docs/setup/PORTABLE_SETUP.md), the [Installation & Setup Guide](file:///home/sanket/Desktop/Sanket/org_website/docs/guides/installation.md) and the [Orchestration Scripts Guide](file:///home/sanket/Desktop/Sanket/org_website/scripts/README.md).
 
 ### 🌐 3. Edge Reverse Proxy & Dynamic Project Hub (Ports 80 & 443)
 Runs a high-performance reverse proxy layer with TLS/SSL encryption and dynamic app routing.

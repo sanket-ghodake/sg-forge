@@ -20,9 +20,18 @@ BOLD='\033[1m'
 DIM='\033[2m'
 RESET='\033[0m'
 
-# Auto-add localized Bun runtime if present
+# Auto-add localized Bun, virtual environment, and portable wrappers
 if [ -d "portables/bun/bin" ]; then
   export PATH="$(pwd)/portables/bun/bin:$PATH"
+fi
+if [ -d "portables/bin" ]; then
+  export PATH="$(pwd)/portables/bin:$PATH"
+fi
+if [ -d ".venv/bin" ]; then
+  export PATH="$(pwd)/.venv/bin:$PATH"
+fi
+if [ -d "node_modules/.bin" ]; then
+  export PATH="$(pwd)/node_modules/.bin:$PATH"
 fi
 
 # ------------------------------------------------------------------------------
@@ -203,6 +212,12 @@ show_help() {
 # Prerequisite & Runtime Checkers
 # ------------------------------------------------------------------------------
 ensure_bun() {
+  if [ -f "scripts/portable/bootstrap-portables.sh" ]; then
+    ./scripts/portable/bootstrap-portables.sh
+    if command -v bun &>/dev/null; then
+      return 0
+    fi
+  fi
   if ! command -v bun &>/dev/null; then
     echo -e "${BLUE}Localized Bun runtime not found. Auto-downloading portable Bun...${RESET}"
     mkdir -p portables
@@ -382,12 +397,65 @@ cmd_doctor() {
     echo -e "${DIM}N/A (Non-systemd host)${RESET}"
   fi
 
-  # 4. Bun Runtime
-  echo -n "• Localized Bun Runtime: "
+  # 4. Localized Toolchain & AI Agents (Zero Host Install)
+  echo "• Localized Portable Toolchain & AI Agents:"
+  echo -n "   - Bun Runtime: "
   if command -v bun &>/dev/null; then
-    echo -e "${GREEN}$(bun --version)${RESET}"
+    echo -e "${GREEN}$(bun --version) ($(command -v bun))${RESET}"
   else
-    echo -e "${YELLOW}Not extracted (Will auto-download on ./run.sh setup)${RESET}"
+    echo -e "${YELLOW}Missing (Run ./run.sh setup to provision)${RESET}"
+  fi
+
+  echo -n "   - RTK Token Optimizer: "
+  if [ -x "portables/bin/rtk" ] || command -v rtk &>/dev/null; then
+    echo -e "${GREEN}Ready ($(command -v rtk 2>/dev/null || echo 'portables/bin/rtk'))${RESET}"
+  else
+    echo -e "${YELLOW}Missing wrapper (Run ./run.sh setup)${RESET}"
+  fi
+
+  echo -n "   - Graphify Knowledge Engine: "
+  if [ -x "portables/bin/graphify" ] || command -v graphify &>/dev/null; then
+    echo -e "${GREEN}Ready ($(command -v graphify 2>/dev/null || echo 'portables/bin/graphify'))${RESET}"
+  else
+    echo -e "${YELLOW}Missing (Run ./run.sh setup)${RESET}"
+  fi
+
+  echo -n "   - Caveman Token Reducer: "
+  if [ -x "portables/bin/caveman" ]; then
+    echo -e "${GREEN}Ready (portables/bin/caveman)${RESET}"
+  else
+    echo -e "${YELLOW}Missing (Run ./run.sh setup)${RESET}"
+  fi
+
+  echo -n "   - Isolated Python .venv: "
+  if [ -x ".venv/bin/python3" ]; then
+    echo -e "${GREEN}Active (.venv/bin/python3)${RESET}"
+    echo -n "     └ Linters & Scanners: "
+    local venv_tools=()
+    [ -x ".venv/bin/ruff" ] && venv_tools+=("ruff")
+    [ -x ".venv/bin/sqlfluff" ] && venv_tools+=("sqlfluff")
+    [ -x ".venv/bin/semgrep" ] && venv_tools+=("semgrep")
+    [ -x ".venv/bin/mkdocs" ] && venv_tools+=("mkdocs")
+    [ -x ".venv/bin/lizard" ] && venv_tools+=("lizard")
+    if [ ${#venv_tools[@]} -gt 0 ]; then
+      echo -e "${GREEN}${venv_tools[*]}${RESET}"
+    else
+      echo -e "${YELLOW}Partial packages${RESET}"
+    fi
+  else
+    echo -e "${YELLOW}Not created (Fallback to Docker toolchain)${RESET}"
+  fi
+
+  echo -n "   - Analysis Binaries: "
+  local analysis_tools=()
+  [ -x "portables/bin/scc" ] && analysis_tools+=("scc")
+  [ -x "portables/bin/tree" ] && analysis_tools+=("tree")
+  [ -x "portables/bin/astryx" ] && analysis_tools+=("astryx")
+  [ -x "portables/bin/hyperfine" ] && analysis_tools+=("hyperfine")
+  if [ ${#analysis_tools[@]} -gt 0 ]; then
+    echo -e "${GREEN}${analysis_tools[*]}${RESET}"
+  else
+    echo -e "${YELLOW}Missing${RESET}"
   fi
 
   # 5. RAM Check

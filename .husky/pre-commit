@@ -1,17 +1,18 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # ==============================================================================
 # Pre-Commit Validation Hook (Enterprise Standard)
+# Compatible with POSIX /bin/sh (dash), bash, and zsh
 # ==============================================================================
 
 # Ensure execution from repo root
 cd "$(dirname "$0")/.."
 
-echo -e "\033[0;34m🔍 Executing pre-commit validation checklist...\033[0m"
+printf "\033[0;34m🔍 Executing pre-commit validation checklist...\033[0m\n"
 
-# Execute pre-commit validation suite
+# Execute pre-commit validation suite with bash
 if [ -f "./toolchain/run-precommit.sh" ]; then
-  bash ./toolchain/run-precommit.sh
+  exec bash ./toolchain/run-precommit.sh "$@"
 else
-  echo -e "\033[0;31m❌ Error: ./toolchain/run-precommit.sh not found!\033[0m"
+  printf "\033[0;31m❌ Error: ./toolchain/run-precommit.sh not found!\033[0m\n"
   exit 1
 fi

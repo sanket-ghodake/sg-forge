@@ -1,18 +1,24 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # ==============================================================================
 # Commit Message Validation Hook (Conventional Commits Standard)
+# Compatible with POSIX /bin/sh (dash), bash, and zsh
 # ==============================================================================
 
 COMMIT_MSG_FILE="$1"
+
+if [ -z "$COMMIT_MSG_FILE" ] || [ ! -f "$COMMIT_MSG_FILE" ]; then
+  exit 0
+fi
+
 FIRST_LINE=$(head -n 1 "$COMMIT_MSG_FILE")
 
 # Allow merge commits, squash commits, or revert commits
-if [[ "$FIRST_LINE" =~ ^(Merge|Revert|Apply) ]]; then
+if echo "$FIRST_LINE" | grep -qE '^(Merge|Revert|Apply)'; then
   exit 0
 fi
 
 # Allow automated release commits
-if [[ "$FIRST_LINE" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+if echo "$FIRST_LINE" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+'; then
   exit 0
 fi
 
@@ -20,32 +26,33 @@ fi
 # type(scope?): description
 CONVENTIONAL_PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_.-]+\))?!?: .+$"
 
-if ! [[ "$FIRST_LINE" =~ $CONVENTIONAL_PATTERN ]]; then
-  echo -e "\033[0;31m❌ Invalid commit message format!\033[0m"
-  echo -e "\033[1;33mMessage:\033[0m '$FIRST_LINE'"
-  echo -e "\n\033[0;36mCommit message must follow Conventional Commits specification:\033[0m"
-  echo -e "  <type>(<optional scope>): <description>"
-  echo -e "\n\033[0;32mAllowed types:\033[0m"
-  echo -e "  feat     : A new feature"
-  echo -e "  fix      : A bug fix"
-  echo -e "  docs     : Documentation only changes"
-  echo -e "  style    : Changes that do not affect code meaning (formatting, etc)"
-  echo -e "  refactor : Code change that neither fixes a bug nor adds a feature"
-  echo -e "  perf     : Code change that improves performance"
-  echo -e "  test     : Adding missing tests or correcting existing tests"
-  echo -e "  build    : Changes that affect the build system or dependencies"
-  echo -e "  ci       : Changes to CI configuration files and scripts"
-  echo -e "  chore    : Other changes that don't modify src or test files"
-  echo -e "\n\033[0;32mExamples:\033[0m"
-  echo -e "  feat(auth): implement case-insensitive user login"
-  echo -e "  fix(proxy): resolve SSE stream buffer timeout"
-  echo -e "  chore(config): update ignore and attributes rules"
+if ! echo "$FIRST_LINE" | grep -qE "$CONVENTIONAL_PATTERN"; then
+  printf "\033[0;31m❌ Invalid commit message format!\033[0m\n"
+  printf "\033[1;33mMessage:\033[0m '%s'\n" "$FIRST_LINE"
+  printf "\n\033[0;36mCommit message must follow Conventional Commits specification:\033[0m\n"
+  printf "  <type>(<optional scope>): <description>\n"
+  printf "\n\033[0;32mAllowed types:\033[0m\n"
+  printf "  feat     : A new feature\n"
+  printf "  fix      : A bug fix\n"
+  printf "  docs     : Documentation only changes\n"
+  printf "  style    : Changes that do not affect code meaning (formatting, etc)\n"
+  printf "  refactor : Code change that neither fixes a bug nor adds a feature\n"
+  printf "  perf     : Code change that improves performance\n"
+  printf "  test     : Adding missing tests or correcting existing tests\n"
+  printf "  build    : Changes that affect the build system or dependencies\n"
+  printf "  ci       : Changes to CI configuration files and scripts\n"
+  printf "  chore    : Other changes that don't modify src or test files\n"
+  printf "\n\033[0;32mExamples:\033[0m\n"
+  printf "  feat(auth): implement case-insensitive user login\n"
+  printf "  fix(proxy): resolve SSE stream buffer timeout\n"
+  printf "  chore(config): update ignore and attributes rules\n"
   exit 1
 fi
 
 # Check maximum line length for header (industry standard <= 100 characters)
-if [ ${#FIRST_LINE} -gt 100 ]; then
-  echo -e "\033[0;31m❌ Commit message title is too long (${#FIRST_LINE} chars). Maximum allowed is 100 characters.\033[0m"
+MSG_LEN=$(printf "%s" "$FIRST_LINE" | wc -c)
+if [ "$MSG_LEN" -gt 100 ]; then
+  printf "\033[0;31m❌ Commit message title is too long (%s chars). Maximum allowed is 100 characters.\033[0m\n" "$MSG_LEN"
   exit 1
 fi
 

@@ -44,6 +44,7 @@ nav:
       - Repository Tree: overview/tree.md
   - Guides:
       - Installation & Setup: guides/installation.md
+      - Portable & Zero-Host Setup: setup/PORTABLE_SETUP.md
       - Standalone Software & Environments: guides/standalone-software-and-environments.md
       - Workflow Setup: setup/WORKFLOW_SETUP.md
       - Docker Environment: guides/docker.md

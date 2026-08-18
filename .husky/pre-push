@@ -2,6 +2,12 @@
 # ==============================================================================
 # Enterprise Pre-Push Quality Gate Hook (Google-Grade Standards)
 # ==============================================================================
+
+# Re-exec under bash if invoked via /bin/sh
+if [ -z "$BASH_VERSION" ]; then
+  exec bash "$0" "$@"
+fi
+
 set -e
 
 # Visual colors
