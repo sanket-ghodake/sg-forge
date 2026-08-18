@@ -4,13 +4,19 @@ set -e
 # Always execute from the repository root directory
 cd "$(dirname "$0")/.."
 
+if [ -d "portables/bin" ]; then
+  export PATH="$(pwd)/portables/bin:$PATH"
+fi
+
 # Check if portable scc executable exists
-if [ -f "portables/scc/scc" ]; then
+if [ -x "portables/bin/scc" ]; then
+  SCC_CMD="portables/bin/scc"
+elif [ -f "portables/scc/scc" ]; then
   SCC_CMD="portables/scc/scc"
 elif command -v scc &>/dev/null; then
   SCC_CMD="scc"
 else
-  echo "Error: scc executable not found in portables/scc/scc or PATH" >&2
+  echo "Error: scc executable not found in portables/bin/scc, portables/scc/scc or PATH" >&2
   exit 1
 fi
 

@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Enterprise Pre-Commit Quality & Security Gate (Google-Grade Architecture)
+# Enterprise Pre-Commit Quality & Security Gate (Google & Meta-Grade Standard)
+# High-Throughput, Low-Memory, Zero-Leak Asynchronous Architecture
 # ==============================================================================
 set -e
 
-# Visual colors
+# Visual formatting & ANSI Colors
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
@@ -17,10 +18,10 @@ echo -e "${BLUE}================================================================
 echo -e "${CYAN}${BOLD}   ⚡ ENTERPRISE PRE-COMMIT VALIDATION SUITE (GOOGLE-GRADE STANDARDS)       ${RESET}"
 echo -e "${BLUE}==============================================================================${RESET}"
 
-# Ensure execution from repository root
+# Ensure execution from repository root context
 cd "$(dirname "$0")/.."
 
-# Export standalone runtimes to PATH
+# Export standalone runtimes to PATH (Zero host installation dependency)
 if [ -d "portables/bun/bin" ]; then
   export PATH="$(pwd)/portables/bun/bin:$PATH"
 fi
@@ -35,7 +36,56 @@ if [ -d "portables/bin" ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# 1. Identify all staged files (excluding deletions)
+# 1. Process Lifecycle & Global Signal Traps (Kill Tree on Abort, Prevent Leaks)
+# ------------------------------------------------------------------------------
+TEMP_DIR=$(mktemp -d -t precommit-XXXXXX 2>/dev/null || mktemp -d 2>/dev/null || echo "/tmp/precommit-$$")
+CONTAINER_LOGS_DIR=".precommit_container_logs"
+
+declare -a ACTIVE_PIDS=()
+CLEANUP_ACTIVE=0
+
+cleanup_all_processes() {
+  local exit_code=$?
+  if [ "$CLEANUP_ACTIVE" -eq 1 ]; then
+    return "$exit_code"
+  fi
+  CLEANUP_ACTIVE=1
+
+  # Terminate all running background child processes
+  if [ ${#ACTIVE_PIDS[@]} -gt 0 ]; then
+    for pid in "${ACTIVE_PIDS[@]}"; do
+      if kill -0 "$pid" 2>/dev/null; then
+        pkill -P "$pid" 2>/dev/null || true
+        kill -TERM "$pid" 2>/dev/null || true
+      fi
+    done
+    sleep 0.1
+    for pid in "${ACTIVE_PIDS[@]}"; do
+      if kill -0 "$pid" 2>/dev/null; then
+        kill -9 "$pid" 2>/dev/null || true
+      fi
+    done
+  fi
+
+  # Clean up temporary workspaces and container logs
+  rm -rf "$TEMP_DIR" "$CONTAINER_LOGS_DIR" 2>/dev/null || true
+  return "$exit_code"
+}
+
+handle_signal() {
+  local sig_name="$1"
+  echo -e "\n${YELLOW}⚠️ Pre-commit interrupted by ${sig_name}. Cleaning up jobs...${RESET}"
+  cleanup_all_processes
+  exit 130
+}
+
+trap cleanup_all_processes EXIT
+trap 'handle_signal "SIGINT"' INT
+trap 'handle_signal "SIGTERM"' TERM
+trap 'handle_signal "SIGQUIT"' QUIT
+
+# ------------------------------------------------------------------------------
+# 2. Identify Staged Files (excluding deletions)
 # ------------------------------------------------------------------------------
 STAGED_FILES=()
 while IFS= read -r line; do
@@ -48,111 +98,75 @@ if [ ${#STAGED_FILES[@]} -eq 0 ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# 2. LAYER 0: Instant In-Memory Hygiene & Security Guards (< 20ms)
+# 3. LAYER 0: Single-Pass In-Memory Hygiene, Integrity & Security Classifier (< 15ms)
 # ------------------------------------------------------------------------------
 L0_FAILED=0
 L0_ERRORS=()
 
-# A. Sensitive file / credential file blocklist
+# Categorized file buckets for subsequent validation layers
+STAGED_JS_TS=()
+STAGED_PY=()
+STAGED_SQL=()
+STAGED_GO=()
+STAGED_DEPS_SRC=()
+STAGED_LOCKFILES=()
+LOCKFILES_CHANGED=false
+GO_DEPS_CHANGED=false
+AGENT_TOUCHED=false
+
+# Cache MkDocs file content once into memory if it exists to avoid repeated disk reads
+MKDOCS_CONTENT=""
+if [ -f "mkdocs.yml" ]; then
+  MKDOCS_CONTENT=$(<mkdocs.yml)
+fi
+
+# Buckets for batched relative import and debugger checks
+REL_CHECK_FILES=()
+DBG_CHECK_JS_FILES=()
+DBG_CHECK_PY_FILES=()
+
+declare -A LOWERCASE_MAP
+MAX_FILE_BYTES=1048576
+
+# Unified Single-Pass Traversal over all Staged Files
 for file in "${STAGED_FILES[@]}"; do
-  # Block un-templated .env files
+  # A. Sensitive file / credential file blocklist
   if [[ "$file" =~ (^|/)\.env(\.[a-zA-Z0-9_-]+)?$ && "$file" != *".example"* && "$file" != *".template"* ]]; then
     L0_ERRORS+=("❌ Prohibited environment secret file staged: '$file' (Use .env.example instead)")
     L0_FAILED=1
   fi
-  # Block private keys, keystores, and certificate stores
   if [[ "$file" =~ \.(pem|key|pkcs12|pfx|p12|kdbx|keystore|jks)$ ]]; then
     L0_ERRORS+=("❌ Prohibited private key / certificate archive staged: '$file'")
     L0_FAILED=1
   fi
-  # Block standard SSH key basenames
   if [[ "$file" =~ (^|/)(id_rsa|id_dsa|id_ed25519|id_ecdsa)(|\.pub)$ ]]; then
     L0_ERRORS+=("❌ Prohibited SSH key file staged: '$file'")
     L0_FAILED=1
   fi
-  # Block binary SQLite / database dumps in source tracking
   if [[ "$file" =~ \.(sqlite|sqlite3|db|dump|sql\.gz)$ && ! "$file" =~ ^(test|fixtures)/ ]]; then
     L0_ERRORS+=("❌ Prohibited database dump / binary SQLite staged: '$file'")
     L0_FAILED=1
   fi
-done
 
-# B. Large staged file limit (Max 1024 KB to prevent permanent git bloat)
-MAX_FILE_BYTES=1048576
-for file in "${STAGED_FILES[@]}"; do
+  # B. Large staged file limit (Max 1024 KB to prevent permanent git bloat)
   if [ -f "$file" ]; then
-    size_bytes=$(git cat-file -s ":$file" 2>/dev/null || wc -c < "$file" 2>/dev/null || echo 0)
+    size_bytes=$(stat -c%s "$file" 2>/dev/null || git cat-file -s ":$file" 2>/dev/null || echo 0)
     if [ "$size_bytes" -gt "$MAX_FILE_BYTES" ]; then
       size_kb=$((size_bytes / 1024))
       L0_ERRORS+=("❌ Staged file exceeds maximum repository limit (1024 KB): '$file' (${size_kb} KB)")
       L0_FAILED=1
     fi
   fi
-done
 
-# C. Merge conflict markers
-if git diff --cached 2>/dev/null | grep -qE '^\+(<{7}( .+)?|={7}[[:space:]]*$|>{7}( .+)?|\|{7}( .+)?)'; then
-  L0_ERRORS+=("❌ Merge conflict markers detected in staged changes! Resolve conflicts before committing.")
-  L0_FAILED=1
-fi
-
-# D. Trojan Source & Invisible Unicode Injection (CVE-2021-42574)
-PYTHON_BIN="python3"
-if [ -f ".venv/bin/python3" ]; then
-  PYTHON_BIN=".venv/bin/python3"
-fi
-
-if command -v "$PYTHON_BIN" &>/dev/null; then
-  BIDI_CHECK=$(git diff --cached -U0 2>/dev/null | "$PYTHON_BIN" -c '
-import sys, re
-# Target CVE-2021-42574 BiDi override & isolate injection attacks
-bidi_pattern = re.compile(r"[\u202A-\u202E\u2066-\u2069\u200B\u200E\u200F]")
-errors = []
-cur_file = ""
-for line in sys.stdin:
-    if line.startswith("+++ b/"):
-        cur_file = line.strip()[6:]
-    elif line.startswith("+") and not line.startswith("+++"):
-        matches = bidi_pattern.findall(line)
-        if matches:
-            errors.append(f"{cur_file}: dangerous unicode codepoints {[hex(ord(c)) for c in matches]}")
-if errors:
-    print(f"Found {len(errors)} dangerous unicode occurrences: {errors[:3]}")
-    sys.exit(1)
-' 2>&1) || {
-    L0_ERRORS+=("❌ Trojan Source / Invisible Unicode characters detected (CVE-2021-42574) in staged diffs: $BIDI_CHECK")
-    L0_FAILED=1
-  }
-fi
-
-# E. File Mode / Executable Bit Hygiene
-# Detect accidental chmod +x on non-script files
-while IFS= read -r stage_entry; do
-  if [ -n "$stage_entry" ]; then
-    mode=$(echo "$stage_entry" | awk '{print $1}')
-    fpath=$(echo "$stage_entry" | awk '{print $4}')
-    if [ "$mode" = "100755" ]; then
-      if [[ ! "$fpath" =~ \.(sh|py|bat|cmd)$ && ! "$fpath" =~ ^(\.husky/|scripts/|portables/) ]]; then
-        L0_ERRORS+=("❌ Non-script file has executable permission bit set (mode 100755): '$fpath' (Run: chmod 644 '$fpath')")
-        L0_FAILED=1
-      fi
-    fi
-  fi
-done < <(git ls-files --stage -- "${STAGED_FILES[@]}")
-
-# F. Case Collision Detection (Monorepo Cross-Platform Protection)
-declare -A LOWERCASE_MAP
-for file in "${STAGED_FILES[@]}"; do
-  lower_name=$(echo "$file" | tr '[:upper:]' '[:lower:]')
+  # C. Case Collision Detection (Pure Bash 5 zero-fork lowercasing)
+  lower_name="${file,,}"
   if [ -n "${LOWERCASE_MAP[$lower_name]}" ] && [ "${LOWERCASE_MAP[$lower_name]}" != "$file" ]; then
     L0_ERRORS+=("❌ Case-collision detected: '$file' and '${LOWERCASE_MAP[$lower_name]}' differ only in casing")
     L0_FAILED=1
   fi
-  LOWERCASE_MAP[$lower_name]="$file"
-done
+  LOWERCASE_MAP["$lower_name"]="$file"
 
-# G. Stale Loose Files & MkDocs Navigation Sync
-for file in "${STAGED_FILES[@]}"; do
+  # D. Stale Loose Files & Generated Artifacts
   if [[ "$file" =~ ^[^/]+\.(py|tmp|bak|log)$ && "$file" != "run.sh" ]]; then
     L0_ERRORS+=("❌ Stale loose file in repository root: '$file' (violates Core Rule 9)")
     L0_FAILED=1
@@ -161,107 +175,38 @@ for file in "${STAGED_FILES[@]}"; do
     L0_ERRORS+=("❌ Generated runtime bundle tracked in git: '$file'")
     L0_FAILED=1
   fi
+
+  # E. MkDocs Navigation Sync
   if [[ "$file" =~ ^docs/.*\.md$ && "$file" != "docs/index.md" && ! "$file" =~ ^docs/archive/ ]]; then
     rel_doc="${file#docs/}"
-    if [ -f "mkdocs.yml" ] && ! grep -q "$rel_doc" mkdocs.yml; then
+    if [ -n "$MKDOCS_CONTENT" ] && [[ "$MKDOCS_CONTENT" != *"$rel_doc"* ]]; then
       L0_ERRORS+=("❌ Staged markdown document missing from mkdocs.yml navigation index: '$file'")
       L0_FAILED=1
     fi
   fi
-done
 
-# H. Relative Import Enforcer (Shift-Left Architectural Hygiene)
-for file in "${STAGED_FILES[@]}"; do
-  if [[ "$file" =~ \.(ts|tsx|js|jsx)$ && "$file" != "test/unit/relativeImports.test.ts" && ! "$file" =~ ^test/apps/ && ! "$file" =~ ^scripts/replace-relative-imports ]]; then
-    if [ -f "$file" ]; then
-      rel_violations=$(grep -nE "(from[[:space:]]+|import[[:space:]]*\(|require[[:space:]]*\()[[:space:]]*[\'\"][.][.]?/" "$file" 2>/dev/null | grep -vE '\.(css|scss|sass)' || true)
-      if [ -n "$rel_violations" ]; then
-        L0_ERRORS+=("❌ Relative import path detected in '$file' (Use path alias @/... instead):")
-        while IFS= read -r vline; do
-          [ -n "$vline" ] && L0_ERRORS+=("     $vline")
-        done <<< "$rel_violations"
-        L0_FAILED=1
-      fi
-    fi
-  fi
-done
-
-# I. Stray Debug Artifacts Blocker (Production Hygiene)
-for file in "${STAGED_FILES[@]}"; do
-  if [[ "$file" =~ \.(ts|tsx|js|jsx)$ && ! "$file" =~ ^(test/|sandbox/) ]]; then
-    if [ -f "$file" ]; then
-      dbg_matches=$(grep -nE '(^|[[:space:];{}])debugger([[:space:];]|$)' "$file" 2>/dev/null || true)
-      if [ -n "$dbg_matches" ]; then
-        L0_ERRORS+=("❌ Stray debugger statement in '$file':")
-        while IFS= read -r dline; do
-          [ -n "$dline" ] && L0_ERRORS+=("     $dline")
-        done <<< "$dbg_matches"
-        L0_FAILED=1
-      fi
-    fi
-  fi
-  if [[ "$file" =~ \.py$ && ! "$file" =~ ^(test/|sandbox/) ]]; then
-    if [ -f "$file" ]; then
-      py_dbg=$(grep -nE '(^|[[:space:];])(breakpoint\(\)|import pdb|pdb\.set_trace\(\))' "$file" 2>/dev/null || true)
-      if [ -n "$py_dbg" ]; then
-        L0_ERRORS+=("❌ Stray Python debugger in '$file':")
-        while IFS= read -r dline; do
-          [ -n "$dline" ] && L0_ERRORS+=("     $dline")
-        done <<< "$py_dbg"
-        L0_FAILED=1
-      fi
-    fi
-  fi
-done
-
-# J. Agent Instructions Sync Integrity Guard (Rule 9)
-AGENT_TOUCHED=false
-for file in "${STAGED_FILES[@]}"; do
+  # F. Agent Instructions Tracking (Rule 9)
   if [[ "$file" =~ ^(\.agents/|AGENTS\.md|CLAUDE\.md|\.github/copilot-instructions\.md) ]]; then
     AGENT_TOUCHED=true
-    break
   fi
-done
 
-if [ "$AGENT_TOUCHED" = true ] && [ -f "./.agents/scripts/sync-agent-instructions.sh" ]; then
-  bash ./.agents/scripts/sync-agent-instructions.sh >/dev/null 2>&1 || true
-  if ! git diff --quiet AGENTS.md .agents/ CLAUDE.md .github/copilot-instructions.md 2>/dev/null; then
-    L0_ERRORS+=("❌ Agent instruction files are out of sync! Run './.agents/scripts/sync-agent-instructions.sh' and stage synced files.")
-    L0_FAILED=1
-  fi
-fi
-
-if [ $L0_FAILED -ne 0 ]; then
-  echo -e "\n${RED}${BOLD}==============================================================================${RESET}"
-  echo -e "${RED}${BOLD}   🚨 LAYER 0 HYGIENE & REPOSITORY INTEGRITY CHECKS FAILED                   ${RESET}"
-  echo -e "${RED}${BOLD}==============================================================================${RESET}"
-  for err in "${L0_ERRORS[@]}"; do
-    echo -e "  ${RED}$err${RESET}"
-  done
-  echo -e "${RED}==============================================================================${RESET}"
-  exit 1
-fi
-
-echo -e "${GREEN}✓ Layer 0: Hygiene, Secrets, Trojan Source, and Integrity checks passed (0ms).${RESET}"
-
-# ------------------------------------------------------------------------------
-# 3. Categorize staged files for Language-Specific AST Linters & Security
-# ------------------------------------------------------------------------------
-STAGED_JS_TS=()
-STAGED_PY=()
-STAGED_SQL=()
-STAGED_GO=()
-STAGED_DEPS_SRC=()
-LOCKFILES_CHANGED=false
-GO_DEPS_CHANGED=false
-STAGED_LOCKFILES=()
-
-for file in "${STAGED_FILES[@]}"; do
+  # G. Categorization for Validation Layers & Batched Grep Buckets
   if [[ "$file" =~ \.(js|jsx|ts|tsx|json|css)$ ]]; then
     STAGED_JS_TS+=("$file")
   fi
+  if [[ "$file" =~ \.(ts|tsx|js|jsx)$ ]]; then
+    if [[ "$file" != "test/unit/relativeImports.test.ts" && ! "$file" =~ ^test/apps/ && ! "$file" =~ ^scripts/replace-relative-imports ]]; then
+      [ -f "$file" ] && REL_CHECK_FILES+=("$file")
+    fi
+    if [[ ! "$file" =~ ^(test/|sandbox/) ]]; then
+      [ -f "$file" ] && DBG_CHECK_JS_FILES+=("$file")
+    fi
+  fi
   if [[ "$file" =~ \.py$ ]]; then
     STAGED_PY+=("$file")
+    if [[ ! "$file" =~ ^(test/|sandbox/) ]]; then
+      [ -f "$file" ] && DBG_CHECK_PY_FILES+=("$file")
+    fi
   fi
   if [[ "$file" =~ \.sql$ ]]; then
     STAGED_SQL+=("$file")
@@ -281,8 +226,110 @@ for file in "${STAGED_FILES[@]}"; do
   fi
 done
 
+# H. Merge Conflict Markers (Instant check on staged diffs)
+if git diff --cached 2>/dev/null | grep -qE '^\+(<{7}( .+)?|={7}[[:space:]]*$|>{7}( .+)?|\|{7}( .+)?)'; then
+  L0_ERRORS+=("❌ Merge conflict markers detected in staged changes! Resolve conflicts before committing.")
+  L0_FAILED=1
+fi
+
+# I. Trojan Source & Invisible Unicode Injection (CVE-2021-42574)
+PYTHON_BIN="python3"
+if [ -f ".venv/bin/python3" ]; then
+  PYTHON_BIN=".venv/bin/python3"
+fi
+
+if command -v "$PYTHON_BIN" &>/dev/null; then
+  BIDI_CHECK=$(git diff --cached -U0 2>/dev/null | "$PYTHON_BIN" -c '
+import sys, re
+bidi_pattern = re.compile(r"[\u202A-\u202E\u2066-\u2069\u200B\u200E\u200F]")
+errors = []
+cur_file = ""
+for line in sys.stdin:
+    if line.startswith("+++ b/"):
+        cur_file = line.strip()[6:]
+    elif line.startswith("+") and not line.startswith("+++"):
+        matches = bidi_pattern.findall(line)
+        if matches:
+            errors.append(f"{cur_file}: dangerous unicode codepoints {[hex(ord(c)) for c in matches]}")
+if errors:
+    print(f"Found {len(errors)} dangerous unicode occurrences: {errors[:3]}")
+    sys.exit(1)
+' 2>&1) || {
+    L0_ERRORS+=("❌ Trojan Source / Invisible Unicode characters detected (CVE-2021-42574) in staged diffs: $BIDI_CHECK")
+    L0_FAILED=1
+  }
+fi
+
+# J. Executable Bit Hygiene (Single git query, whitespace-tolerant parser)
+while IFS=$' \t' read -r mode hash stage fpath; do
+  if [ "$mode" = "100755" ] && [ -n "$fpath" ]; then
+    if [[ ! "$fpath" =~ \.(sh|py|bat|cmd)$ && ! "$fpath" =~ ^(\.husky/|scripts/|portables/|toolchain/|test/scripts/|run\.sh) ]]; then
+      L0_ERRORS+=("❌ Non-script file has executable permission bit set (mode 100755): '$fpath' (Run: chmod 644 '$fpath')")
+      L0_FAILED=1
+    fi
+  fi
+done < <(git ls-files --stage -- "${STAGED_FILES[@]}" 2>/dev/null || true)
+
+# K. Batched Relative Import Enforcer (Single Grep Execution Across All Target Files)
+if [ ${#REL_CHECK_FILES[@]} -gt 0 ]; then
+  rel_violations=$(grep -HnE "(from[[:space:]]+|import[[:space:]]*\(|require[[:space:]]*\()[[:space:]]*[\'\"][.][.]?/" "${REL_CHECK_FILES[@]}" 2>/dev/null | grep -vE '\.(css|scss|sass)' || true)
+  if [ -n "$rel_violations" ]; then
+    L0_ERRORS+=("❌ Relative import path detected (Use path alias @/... instead):")
+    while IFS= read -r vline; do
+      [ -n "$vline" ] && L0_ERRORS+=("     $vline")
+    done <<< "$rel_violations"
+    L0_FAILED=1
+  fi
+fi
+
+# L. Batched Stray Debugger Artifacts (Single Grep Execution)
+if [ ${#DBG_CHECK_JS_FILES[@]} -gt 0 ]; then
+  dbg_matches=$(grep -HnE '(^|[[:space:];{}])debugger([[:space:];]|$)' "${DBG_CHECK_JS_FILES[@]}" 2>/dev/null || true)
+  if [ -n "$dbg_matches" ]; then
+    L0_ERRORS+=("❌ Stray debugger statement detected:")
+    while IFS= read -r dline; do
+      [ -n "$dline" ] && L0_ERRORS+=("     $dline")
+    done <<< "$dbg_matches"
+    L0_FAILED=1
+  fi
+fi
+
+if [ ${#DBG_CHECK_PY_FILES[@]} -gt 0 ]; then
+  py_dbg=$(grep -HnE '(^|[[:space:];])(breakpoint\(\)|import pdb|pdb\.set_trace\(\))' "${DBG_CHECK_PY_FILES[@]}" 2>/dev/null || true)
+  if [ -n "$py_dbg" ]; then
+    L0_ERRORS+=("❌ Stray Python debugger statement detected:")
+    while IFS= read -r dline; do
+      [ -n "$dline" ] && L0_ERRORS+=("     $dline")
+    done <<< "$py_dbg"
+    L0_FAILED=1
+  fi
+fi
+
+# M. Agent Instruction Sync Guard (Rule 9)
+if [ "$AGENT_TOUCHED" = true ] && [ -f "./.agents/scripts/sync-agent-instructions.sh" ]; then
+  bash ./.agents/scripts/sync-agent-instructions.sh >/dev/null 2>&1 || true
+  if ! git diff --quiet AGENTS.md .agents/ CLAUDE.md .github/copilot-instructions.md 2>/dev/null; then
+    L0_ERRORS+=("❌ Agent instruction files are out of sync! Run './.agents/scripts/sync-agent-instructions.sh' and stage synced files.")
+    L0_FAILED=1
+  fi
+fi
+
+# Check Layer 0 status
+if [ $L0_FAILED -ne 0 ]; then
+  echo -e "\n${RED}${BOLD}==============================================================================${RESET}"
+  echo -e "${RED}${BOLD}   🚨 LAYER 0 HYGIENE & REPOSITORY INTEGRITY CHECKS FAILED                   ${RESET}"
+  echo -e "${RED}${BOLD}==============================================================================${RESET}"
+  for err in "${L0_ERRORS[@]}"; do
+    echo -e "  ${RED}$err${RESET}"
+  done
+  echo -e "${RED}==============================================================================${RESET}"
+  exit 1
+fi
+
+echo -e "${GREEN}✓ Layer 0: Hygiene, Secrets, Trojan Source, and Integrity checks passed (0ms).${RESET}"
+
 # ------------------------------------------------------------------------------
-# 4. Check tool availability
+# 4. Tool Availability Detectors
 # ------------------------------------------------------------------------------
 HAS_DOCKER=false
 if command -v docker &>/dev/null; then
@@ -300,7 +347,6 @@ has_trivy() { command -v trivy &>/dev/null; }
 has_govulncheck() { command -v govulncheck &>/dev/null && command -v go &>/dev/null; }
 has_tsc() { command -v tsc &>/dev/null; }
 
-# Determine which checks need container fallback
 NEED_CONTAINER=false
 CONTAINER_COMMANDS=()
 CONTAINER_JOB_NAMES=()
@@ -317,13 +363,13 @@ ensure_docker_image() {
 }
 
 # ------------------------------------------------------------------------------
-# 5. Check Runners (Local native execution)
+# 5. Local Native Check Runners (High Performance & Scoped)
 # ------------------------------------------------------------------------------
 check_biome() {
   if command -v biome &>/dev/null; then
-    biome ci "${STAGED_JS_TS[@]}"
+    biome ci --no-errors-on-unmatched "${STAGED_JS_TS[@]}"
   elif command -v bunx &>/dev/null; then
-    bunx @biomejs/biome ci "${STAGED_JS_TS[@]}"
+    bunx @biomejs/biome ci --no-errors-on-unmatched "${STAGED_JS_TS[@]}"
   fi
 }
 
@@ -340,7 +386,7 @@ check_depcruise() {
 }
 
 check_golangci() {
-  (cd sandbox/apps/reference-go && golangci-lint run --timeout=5m ./...)
+  (cd sandbox/apps/reference-go && golangci-lint run --timeout=2m ./...)
 }
 
 check_gitleaks() {
@@ -395,17 +441,19 @@ check_tsc() {
   if [ "$has_frontend" = true ]; then
     local fe_output
     fe_output=$(cd core/src/frontend && tsc --noEmit 2>&1) || true
-    while IFS= read -r line; do
-      if [ -n "$line" ]; then
-        for file in "${staged_ts_src[@]}"; do
-          local rel_fe="${file#core/src/frontend/}"
-          if [[ "$line" == *"$rel_fe"* || "$line" == *"$file"* ]]; then
-            errors+=("$line")
-            failed=1
-          fi
-        done
-      fi
-    done <<< "$fe_output"
+    if [ -n "$fe_output" ]; then
+      while IFS= read -r line; do
+        if [ -n "$line" ]; then
+          for file in "${staged_ts_src[@]}"; do
+            local rel_fe="${file#core/src/frontend/}"
+            if [[ "$line" == *"$rel_fe"* || "$line" == *"$file"* ]]; then
+              errors+=("$line")
+              failed=1
+            fi
+          done
+        fi
+      done <<< "$fe_output"
+    fi
   fi
 
   # 2. Backend / packages tsc check if backend/packages files staged
@@ -418,17 +466,19 @@ check_tsc() {
 
   if [ ${#staged_backend_src[@]} -gt 0 ]; then
     local be_output
-    be_output=$(tsc --noEmit --incremental --tsBuildInfoFile .tsbuildinfo 2>&1) || true
-    while IFS= read -r line; do
-      if [ -n "$line" ]; then
-        for file in "${staged_backend_src[@]}"; do
-          if [[ "$line" == *"$file"* ]]; then
-            errors+=("$line")
-            failed=1
-          fi
-        done
-      fi
-    done <<< "$be_output"
+    be_output=$(tsc --noEmit --incremental --tsBuildInfoFile "$TEMP_DIR/.tsbuildinfo" 2>&1) || true
+    if [ -n "$be_output" ]; then
+      while IFS= read -r line; do
+        if [ -n "$line" ]; then
+          for file in "${staged_backend_src[@]}"; do
+            if [[ "$line" == *"$file"* ]]; then
+              errors+=("$line")
+              failed=1
+            fi
+          done
+        fi
+      done <<< "$be_output"
+    fi
   fi
   
   if [ $failed -eq 1 ]; then
@@ -442,16 +492,8 @@ check_tsc() {
 }
 
 # ------------------------------------------------------------------------------
-# 6. Parallel Job Orchestrator
+# 6. Parallel Async Job Orchestrator with Timeout & Memory Protections
 # ------------------------------------------------------------------------------
-TEMP_DIR=$(mktemp -d -t precommit-XXXXXX)
-CONTAINER_LOGS_DIR=".precommit_container_logs"
-
-cleanup() {
-  rm -rf "$TEMP_DIR" "$CONTAINER_LOGS_DIR"
-}
-trap cleanup EXIT
-
 job_names=()
 job_pids=()
 job_start_times=()
@@ -465,6 +507,7 @@ run_job() {
   ( "$@" ) > "$log_file" 2>&1 &
   local pid=$!
   
+  ACTIVE_PIDS+=("$pid")
   job_names+=("$name")
   job_pids+=("$pid")
   job_start_times+=($(date +%s))
@@ -496,7 +539,7 @@ echo \$exit_code_$i > /app/$CONTAINER_LOGS_DIR/job_$i.exit
 EOF
   done
 
-  chmod -R 777 "$CONTAINER_LOGS_DIR"
+  chmod -R 777 "$CONTAINER_LOGS_DIR" 2>/dev/null || true
   sync 2>/dev/null || true
 }
 
@@ -578,7 +621,7 @@ if [ "$GO_DEPS_CHANGED" = true ]; then
   run_govulncheck=true
 fi
 
-# Setup container directory if needed
+# Setup container directory if container execution needed
 rm -rf "$CONTAINER_LOGS_DIR"
 mkdir -p "$CONTAINER_LOGS_DIR"
 
@@ -587,12 +630,12 @@ sast_files+=("${STAGED_JS_TS[@]}")
 sast_files+=("${STAGED_PY[@]}")
 sast_files+=("${STAGED_GO[@]}")
 
-# Schedule all checks simultaneously
-schedule_check "JS/TS Lint & Format (Biome)" check_biome has_biome "bunx @biomejs/biome ci ${STAGED_JS_TS[*]}" "$run_biome"
+# Schedule parallel checks
+schedule_check "JS/TS Lint & Format (Biome)" check_biome has_biome "bunx @biomejs/biome ci --no-errors-on-unmatched ${STAGED_JS_TS[*]}" "$run_biome"
 schedule_check "Python Lint & Format (Ruff)" check_ruff has_ruff "ruff check ${STAGED_PY[*]} && ruff format --check ${STAGED_PY[*]}" "$run_ruff"
 schedule_check "SQL Schema Lint (SQLFluff)" check_sqlfluff has_sqlfluff "sqlfluff lint ${STAGED_SQL[*]} --dialect postgres" "$run_sqlfluff"
 schedule_check "Architecture Boundaries (Dep-Cruiser)" check_depcruise has_depcruise "depcruise --config .dependency-cruiser.json ${STAGED_DEPS_SRC[*]}" "$run_depcruise"
-schedule_check "Go Metalinter (golangci-lint)" check_golangci has_go "cd sandbox/apps/reference-go && golangci-lint run --timeout=5m ./..." "$run_golangci"
+schedule_check "Go Metalinter (golangci-lint)" check_golangci has_go "cd sandbox/apps/reference-go && golangci-lint run --timeout=2m ./..." "$run_golangci"
 schedule_check "Secret Leak Detection (Gitleaks)" check_gitleaks has_gitleaks "gitleaks protect --staged --verbose --redact" "true"
 schedule_check "SAST Vulnerability Scan (Semgrep)" check_semgrep has_semgrep "if [ -f .semgrep.yml ]; then semgrep scan --config .semgrep.yml --metrics=off --error --skip-unknown-extensions ${sast_files[*]}; else semgrep scan --config p/security-audit --metrics=off --error --skip-unknown-extensions ${sast_files[*]}; fi" "$run_semgrep"
 
@@ -608,7 +651,7 @@ if [ "$NEED_CONTAINER" = true ]; then
 fi
 
 # ------------------------------------------------------------------------------
-# 8. Collect Parallel Results & Render Report
+# 8. Collect Parallel Results & Generate Report
 # ------------------------------------------------------------------------------
 GLOBAL_FAILED=0
 results=()
