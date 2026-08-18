@@ -48,17 +48,17 @@ describe("Administrative Query Engine Sandbox", () => {
   });
 
   test("Allows super_admin to execute destructive queries (DROP)", async () => {
-    mockRoExecute.mockClear();
+    mockExecute.mockClear();
     const result = await executeAdminQuery("DROP TABLE temp_logs;", "super_admin");
     expect(result).toBeDefined();
-    expect(mockRoExecute).toHaveBeenCalled();
+    expect(mockExecute).toHaveBeenCalled();
   });
 
   test("Allows super_admin to execute safe SELECT queries", async () => {
-    mockRoExecute.mockClear();
+    mockExecute.mockClear();
     const result = await executeAdminQuery("SELECT name FROM structural_metadata;", "super_admin");
     expect(result).toBeDefined();
-    expect(mockRoExecute).toHaveBeenCalled();
+    expect(mockExecute).toHaveBeenCalled();
   });
 
   test("Allows read-only admin to execute query with destructive keyword in a string literal", async () => {

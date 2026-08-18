@@ -1,4 +1,6 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 
 export interface JwtKeys {
   publicKey: crypto.KeyObject;
@@ -13,9 +15,75 @@ export interface JwtKeys {
   };
 }
 
+interface StoredKeyRecord {
+  kid: string;
+  publicKeyPem: string;
+  privateKeyPem: string;
+  jwk: any;
+}
+
 interface RotatedKeysStore {
   activeKey: JwtKeys;
   historicalKeys: JwtKeys[];
+}
+
+function getCacheFilePath(): string {
+  const baseDir = process.env.JWT_KEY_CACHE_DIR || path.join(process.cwd(), ".cache");
+  return path.join(baseDir, "jwt-keys.json");
+}
+
+function saveStoreToDisk(store: RotatedKeysStore) {
+  try {
+    const cacheFile = getCacheFilePath();
+    const dir = path.dirname(cacheFile);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    const data = {
+      activeKey: {
+        kid: store.activeKey.jwk.kid,
+        publicKeyPem: store.activeKey.publicKey.export({ type: "spki", format: "pem" }).toString(),
+        privateKeyPem: store.activeKey.privateKey
+          .export({ type: "pkcs8", format: "pem" })
+          .toString(),
+        jwk: store.activeKey.jwk,
+      },
+      historicalKeys: store.historicalKeys.map((k) => ({
+        kid: k.jwk.kid,
+        publicKeyPem: k.publicKey.export({ type: "spki", format: "pem" }).toString(),
+        privateKeyPem: k.privateKey.export({ type: "pkcs8", format: "pem" }).toString(),
+        jwk: k.jwk,
+      })),
+    };
+    fs.writeFileSync(cacheFile, JSON.stringify(data, null, 2), "utf8");
+  } catch (_err) {
+    // Graceful fallback if filesystem is read-only
+  }
+}
+
+function loadStoreFromDisk(): RotatedKeysStore | null {
+  try {
+    const cacheFile = getCacheFilePath();
+    if (fs.existsSync(cacheFile)) {
+      const raw = JSON.parse(fs.readFileSync(cacheFile, "utf8"));
+      if (raw?.activeKey?.publicKeyPem) {
+        const activeKey: JwtKeys = {
+          publicKey: crypto.createPublicKey(raw.activeKey.publicKeyPem),
+          privateKey: crypto.createPrivateKey(raw.activeKey.privateKeyPem),
+          jwk: raw.activeKey.jwk,
+        };
+        const historicalKeys: JwtKeys[] = (raw.historicalKeys || []).map((h: StoredKeyRecord) => ({
+          publicKey: crypto.createPublicKey(h.publicKeyPem),
+          privateKey: crypto.createPrivateKey(h.privateKeyPem),
+          jwk: h.jwk,
+        }));
+        return { activeKey, historicalKeys };
+      }
+    }
+  } catch (_err) {
+    // fallback
+  }
+  return null;
 }
 
 function generateNewKeyPair(kid: string): JwtKeys {
@@ -37,11 +105,17 @@ function generateNewKeyPair(kid: string): JwtKeys {
 function getStore(): RotatedKeysStore {
   let store = (globalThis as any).rotatedJwtKeysStore;
   if (!store) {
-    const initialKey = generateNewKeyPair("forge-portal-key-1");
-    store = {
-      activeKey: initialKey,
-      historicalKeys: [],
-    };
+    const fromDisk = loadStoreFromDisk();
+    if (fromDisk) {
+      store = fromDisk;
+    } else {
+      const initialKey = generateNewKeyPair("forge-portal-key-1");
+      store = {
+        activeKey: initialKey,
+        historicalKeys: [],
+      };
+      saveStoreToDisk(store);
+    }
     (globalThis as any).rotatedJwtKeysStore = store;
   }
   return store;
@@ -87,5 +161,6 @@ export function rotateKeys(): string {
     store.historicalKeys.pop();
   }
 
+  saveStoreToDisk(store);
   return newKid;
 }

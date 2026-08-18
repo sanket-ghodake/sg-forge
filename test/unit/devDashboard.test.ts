@@ -1,7 +1,16 @@
-import { afterAll, afterEach, describe, expect, spyOn, test } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, spyOn, test } from "bun:test";
+import * as cp from "node:child_process";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { handleRequest } from "@backend/dev-dashboard/server";
 import { db } from "@database/connection";
-import * as cp from "child_process";
+
+beforeAll(() => {
+  const jsPath = path.resolve(process.cwd(), "core/src/backend/dev-dashboard/dashboard.js");
+  if (!fs.existsSync(jsPath)) {
+    fs.writeFileSync(jsPath, '/* simulated bundle */ const activeTabId = "overview";', "utf8");
+  }
+});
 
 // Setup mocks for database execute
 const mockDbExecute = spyOn(db, "execute").mockImplementation(async (sqlObj: any) => {

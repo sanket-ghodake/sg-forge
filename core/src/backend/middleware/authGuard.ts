@@ -43,8 +43,13 @@ export async function middleware(request: any, event?: any) {
   if (path.startsWith("/developer")) {
     const isFromProxy = request.headers.get("x-from-developer-proxy") === "true";
     if (!isFromProxy) {
-      // Redirect direct requests on port 3001 to port 3003
-      return NextResponse.redirect(new URL("http://localhost:3003/"));
+      // Redirect direct requests on port 3001 to developer proxy
+      const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+      const proto = request.headers.get("x-forwarded-proto") || "http";
+      const gatewayUrl =
+        process.env.GATEWAY_URL ||
+        (host ? `${proto}://${host.split(":")[0]}:3003/` : "http://localhost:3003/");
+      return NextResponse.redirect(new URL(gatewayUrl, request.url));
     }
     return NextResponse.next();
   }
@@ -92,6 +97,7 @@ export async function middleware(request: any, event?: any) {
           name: payload.name,
           role: payload.role,
           isPasswordChanged: payload.isPasswordChanged,
+          sudoUntil: (payload as any).sudoUntil,
         };
         renewedToken = await encryptSession(freshPayload);
       }

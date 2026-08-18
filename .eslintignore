@@ -18,6 +18,8 @@ build/
 out/
 **/out/
 site/
+.cache/
+**/.cache/
 .tsbuildinfo
 *.tsbuildinfo
 core/src/backend/dev-dashboard/dashboard.js

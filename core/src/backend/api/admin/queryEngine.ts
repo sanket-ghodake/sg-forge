@@ -1,5 +1,5 @@
 // src/backend/api/admin/queryEngine.ts
-import { roDb } from "@database/connection";
+import { db, roDb } from "@database/connection";
 import { sql } from "drizzle-orm";
 
 interface SqlToken {
@@ -188,7 +188,8 @@ export async function executeAdminQuery(sqlInputStr: string, adminRole: string) 
     }
   }
 
-  // Run the query against the read-only database pool
-  const result = await roDb.execute(sql.raw(sqlInputStr));
+  // Super admin routes to writable db pool; others route to roDb read-only pool
+  const targetDb = adminRole === "super_admin" ? db : roDb;
+  const result = await targetDb.execute(sql.raw(sqlInputStr));
   return result;
 }

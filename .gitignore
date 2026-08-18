@@ -60,6 +60,8 @@ core/src/backend/dev-dashboard/dashboard.js
 .vercel
 .vercel/
 .parcel-cache/
+.cache
+.cache/
 
 # 4. Local Environment Variables, Secrets & Certificates
 .env

@@ -9,7 +9,8 @@
         "core/src/frontend/public/sdk/forge-sdk.js",
         "test/unit/relativeImports.test.ts",
         "test/unit/forgeSdk.test.ts",
-        "test/scripts/absolute-import-enforcer.ts"
+        "test/scripts/absolute-import-enforcer.ts",
+        ".cache/**"
       ],
       "linter": { "enabled": false },
       "formatter": { "enabled": false }

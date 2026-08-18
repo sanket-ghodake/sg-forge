@@ -13,6 +13,8 @@
 /.node_env/
 /volume/
 /site/
+/.cache/
+/**/.cache/
 /test/coverage/
 /test/dummy-data/
 /scripts/portable/

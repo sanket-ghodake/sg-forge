@@ -4,7 +4,6 @@ import { decryptText } from "@backend/utils/crypto";
 import { parseDbTimestamp } from "@backend/utils/date";
 import { isRateLimited } from "@backend/utils/rateLimiter";
 import { db } from "@database/connection";
-import crypto from "crypto";
 import { sql } from "drizzle-orm";
 import { SignJWT } from "jose";
 import { type NextRequest, NextResponse } from "next/server";
@@ -113,12 +112,13 @@ export async function POST(request: NextRequest) {
       email: user.email,
       role: user.role,
       designation: user.designation,
+      clientId: app.clientId,
       scopes: authorizedScopes,
       scope: authorizedScopes.join(" "),
     })
       .setProtectedHeader({ alg: "RS256", kid: activeKeys.jwk.kid })
       .setSubject(user.id)
-      .setAudience(app.clientId || app.id)
+      .setAudience(app.id)
       .setIssuedAt()
       .setExpirationTime("15m")
       .sign(activeKeys.privateKey);

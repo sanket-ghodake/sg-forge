@@ -1128,7 +1128,7 @@ function startAppServerLocal(slug: string) {
   // nosemgrep
   const proc = spawn(cmd, args, {
     cwd: appPath,
-    shell: true,
+    shell: false,
     detached: true,
     env: { ...process.env, PORTAL_URL: process.env.PORTAL_URL || "http://localhost:3001" },
   });

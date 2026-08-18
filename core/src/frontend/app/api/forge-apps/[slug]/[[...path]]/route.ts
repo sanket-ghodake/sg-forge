@@ -43,7 +43,7 @@ async function handleProxy(request: NextRequest, context: any) {
   const queryStr = request.nextUrl.search;
 
   // Construct destination URL
-  const targetUrlStr = entryUrl.endsWith("/") ? entryUrl : entryUrl + "/";
+  const targetUrlStr = entryUrl.endsWith("/") ? entryUrl : `${entryUrl}/`;
   const targetUrl = new URL(pathStr + queryStr, targetUrlStr).toString();
 
   try {
@@ -114,11 +114,31 @@ async function handleProxy(request: NextRequest, context: any) {
       headers: responseHeaders,
     });
   } catch (error: any) {
+    const origin = request.headers.get("origin") || "*";
+    if (request.method !== "GET") {
+      console.error(
+        `API proxy upstream failure for ${request.method} ${slug} to ${targetUrl}:`,
+        error.message,
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Bad Gateway: Downstream service for ${slug} is unreachable or timed out`,
+          message: error.message,
+        },
+        {
+          status: 502,
+          headers: {
+            "Access-Control-Allow-Origin": origin,
+          },
+        },
+      );
+    }
+
     console.warn(
       `API proxy offline for ${slug} to ${targetUrl}. Serving simulated JSON fallback.`,
       error.message,
     );
-    const origin = request.headers.get("origin") || "*";
     return NextResponse.json(
       {
         success: true,

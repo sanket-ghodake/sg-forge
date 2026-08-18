@@ -7,6 +7,7 @@ export interface UserSession {
   name: string;
   role: string;
   isPasswordChanged: boolean;
+  sudoUntil?: number;
 }
 function getJwtSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;

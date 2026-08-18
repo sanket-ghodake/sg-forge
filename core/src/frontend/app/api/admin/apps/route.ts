@@ -65,7 +65,25 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { action, appId, slug, isEnabled } = body;
+    const { action, appId, isEnabled } = body;
+
+    // Verify ownership in forge_app_admins if caller is standard admin
+    if (
+      session.role !== "super_admin" &&
+      (action === "toggle" || action === "remove" || action === "rotate_secret")
+    ) {
+      if (!appId) return NextResponse.json({ error: "Missing appId" }, { status: 400 });
+      const adminCheck = await db.execute(sql`
+        SELECT 1 FROM forge_app_admins WHERE app_id = ${appId} AND user_id = ${session.id}
+      `);
+      const adminRows = (adminCheck.rows || adminCheck) as any[];
+      if (!adminRows || adminRows.length === 0) {
+        return NextResponse.json(
+          { error: "Forbidden: You are not an assigned admin for this application" },
+          { status: 403 },
+        );
+      }
+    }
 
     // 1. Toggle Enabled Status
     if (action === "toggle") {
@@ -109,6 +127,7 @@ export async function POST(request: Request) {
       await db.execute(sql`DELETE FROM forge_app_storage WHERE app_id = ${appId}`);
       await db.execute(sql`DELETE FROM forge_access_tokens WHERE app_id = ${appId}`);
       await db.execute(sql`DELETE FROM forge_auth_codes WHERE app_id = ${appId}`);
+      await db.execute(sql`DELETE FROM forge_app_admins WHERE app_id = ${appId}`);
       await db.execute(sql`DELETE FROM forge_apps WHERE id = ${appId}`);
 
       await logEvent(session.id, "App Removed", "CRITICAL", { appId }, ipAddress);
@@ -117,6 +136,12 @@ export async function POST(request: Request) {
 
     // 3. Re-scan & Sync / Install local apps
     if (action === "install" || action === "scan") {
+      if (session.role !== "super_admin") {
+        return NextResponse.json(
+          { error: "Forbidden: Super Admin required to scan manifests" },
+          { status: 403 },
+        );
+      }
       const manifests = await parseAndRegisterManifests();
       await logEvent(
         session.id,
@@ -132,9 +157,9 @@ export async function POST(request: Request) {
     if (action === "rotate_secret") {
       if (!appId) return NextResponse.json({ error: "Missing appId" }, { status: 400 });
 
-      const crypto = await import("crypto");
+      const crypto = await import("node:crypto");
       const { encryptText } = await import("@backend/utils/crypto");
-      const newSecret = "secret_" + crypto.randomUUID().replace(/-/g, "");
+      const newSecret = `secret_${crypto.randomUUID().replace(/-/g, "")}`;
       const encryptedSecret = encryptText(newSecret);
 
       await db.execute(sql`
