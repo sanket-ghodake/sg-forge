@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-FROM python:3.11-alpine
+FROM python:3.12-alpine
 
 RUN apk add --no-cache postgresql-client
 WORKDIR /app

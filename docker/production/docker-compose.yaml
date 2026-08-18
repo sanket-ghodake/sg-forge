@@ -2,7 +2,7 @@ name: ${COMPOSE_PROJECT_NAME:-sgforge}
 
 services:
   db:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: ${PROJECT_NAME:-sgforge}-${APP_ENV:-prod}-db
     restart: unless-stopped
     environment:

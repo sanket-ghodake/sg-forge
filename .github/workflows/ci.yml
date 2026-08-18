@@ -6,47 +6,227 @@ on:
   pull_request:
     branches: [ main, dev ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  toolchain-validation:
-    name: Dockerized Toolchain Validation
+  # ----------------------------------------------------------------------------
+  # Job 1: Fast Code Quality, Formatting & Static Linting
+  # ----------------------------------------------------------------------------
+  lint-and-hygiene:
+    name: Lint, Format & Hygiene
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
-      - name: Create Network
-        run: docker network create sgforge-network || true
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
 
-      - name: Build Toolchain Image
-        run: docker compose -f toolchain/docker-compose.yml build toolchain
+      - name: Install Python Linters
+        run: pip install ruff sqlfluff
 
-      - name: Run Lint & Architecture Validation
-        run: docker compose -f toolchain/docker-compose.yml run --rm lint
+      - name: Install JS/TS Dependencies
+        run: bun install --frozen-lockfile
 
-      - name: Run Security Audits
-        run: docker compose -f toolchain/docker-compose.yml run --rm security
+      - name: JS/TS Lint & Format Check (Biome)
+        run: bunx @biomejs/biome ci core/ packages/ test/
 
-      - name: Start Database Container
+      - name: Python Lint & Format Check (Ruff)
         run: |
-          docker compose -f docker/development/docker-compose.yaml up -d db
-          # Wait for database healthcheck
-          until docker exec sgforge-db-sanket pg_isready -U lifeos -d org_db; do
-            echo "Waiting for database..."
-            sleep 1
-          done
-          echo "Database is ready!"
+          ruff check sandbox/apps/reference-python/
+          ruff format --check sandbox/apps/reference-python/
 
-      - name: Run Unit & Integration Tests
-        run: docker compose -f toolchain/docker-compose.yml run --rm test
+      - name: SQL Schema Lint Check (SQLFluff)
+        run: sqlfluff lint core/src/database/ --dialect postgres
 
-      - name: Build Documentation (MkDocs)
-        run: docker compose -f toolchain/docker-compose.yml run --rm docs
+  # ----------------------------------------------------------------------------
+  # Job 2: Type Safety & Architecture Boundaries
+  # ----------------------------------------------------------------------------
+  types-and-boundaries:
+    name: Type Safety & Architecture
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Clean up Containers
-        if: always()
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache-dependency-path: sandbox/apps/reference-go/go.sum
+
+      - name: Install JS/TS Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Backend & Core TypeScript Compilation (tsc)
+        run: bunx tsc --noEmit
+
+      - name: Frontend TypeScript Compilation (tsc)
+        run: (cd core/src/frontend && bunx tsc --noEmit)
+
+      - name: Architecture Boundary Rules (Dependency-Cruiser)
+        run: bunx depcruise --config .dependency-cruiser.json core packages sandbox
+
+      - name: Go Metalinter (golangci-lint)
+        if: hashFiles('sandbox/apps/reference-go/go.mod') != ''
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.64.5
+          working-directory: sandbox/apps/reference-go
+          args: --timeout=5m
+
+  # ----------------------------------------------------------------------------
+  # Job 3: Enterprise Security & Supply Chain Audits
+  # ----------------------------------------------------------------------------
+  security-audits:
+    name: Security & Secret Audits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret Leak Detection (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Static Application Security Testing (Semgrep)
         run: |
-          docker compose -f toolchain/docker-compose.yml down -v || true
-          docker compose -f docker/development/docker-compose.yaml down -v || true
+          python3 -m pip install semgrep
+          if [ -f .semgrep.yml ]; then
+            semgrep scan --config .semgrep.yml --metrics=off --error --skip-unknown-extensions
+          else
+            semgrep scan --config p/security-audit --metrics=off --error --skip-unknown-extensions
+          fi
+
+      - name: Dependency Supply-Chain Audit (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+          ignore-unfixed: true
+
+  # ----------------------------------------------------------------------------
+  # Job 4: Unit Test Suite & Code Coverage
+  # ----------------------------------------------------------------------------
+  unit-tests:
+    name: Unit Tests & Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Install JS/TS Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run TS/JS Unit Tests with Coverage
+        run: bun test test/unit --coverage
+
+      - name: Run Go Unit Tests
+        if: hashFiles('sandbox/apps/reference-go/go.mod') != ''
+        run: |
+          cd sandbox/apps/reference-go
+          go test -v -cover ./...
+
+  # ----------------------------------------------------------------------------
+  # Job 5: Integration Tests & DB Schema Validation
+  # ----------------------------------------------------------------------------
+  integration-tests:
+    name: Integration Tests & Postgres
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: lifeos
+          POSTGRES_PASSWORD: change_me_db_password
+          POSTGRES_DB: org_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install JS/TS Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Initialize Database Roles & Permissions
+        env:
+          PGPASSWORD: change_me_db_password
+        run: |
+          psql -h localhost -U lifeos -d org_db -f docker/development/init-db.sql
+
+      - name: Run Database Schema Initialization & Seed
+        env:
+          DATABASE_URL: postgres://lifeos:change_me_db_password@localhost:5432/org_db
+        run: |
+          bun run core/src/database/initialize-local-db.ts
+
+      - name: Run Full Integration Test Suite
+        env:
+          DATABASE_URL: postgres://lifeos:change_me_db_password@localhost:5432/org_db
+          JWT_SECRET: dev-docker-secret-key-that-is-at-least-32-characters-long
+          PORTAL_URL: http://localhost:3001
+        run: |
+          bun test test/integration
+
+  # ----------------------------------------------------------------------------
+  # Job 6: Architecture Documentation Validation (MkDocs)
+  # ----------------------------------------------------------------------------
+  docs-build:
+    name: Documentation Validation (MkDocs)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install MkDocs & Material Theme
+        run: pip install mkdocs mkdocs-material
+
+      - name: Strict Documentation Build Check
+        run: mkdocs build --strict

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   example-forge-app-db:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: example-forge-app-db
     environment:
       POSTGRES_USER: app_user

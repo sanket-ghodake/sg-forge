@@ -9,10 +9,10 @@
 
 | Component | Framework / Technology | Version (2026 Baseline) | Standalone Location |
 | :--- | :--- | :--- | :--- |
-| **JS / TS Engine** | Portable Bun / Node.js | **Node 26 LTS** / Bun 1.x | `portables/bun`, `.node_env/` |
+| **JS / TS Engine** | Portable Bun / Node.js | **Node 24 LTS** / Bun 1.x | `portables/bun`, `.node_env/` |
 | **Frontend Framework** | Next.js | **v16.2.9** | `node_modules/next` |
 | **UI Library** | React | **v19.2.4** | `node_modules/react` |
-| **ORM & Database** | Drizzle ORM + PostgreSQL | **v0.45.2** | `node_modules/drizzle-orm` |
+| **ORM & Database** | Drizzle ORM + PostgreSQL 17 | **v0.45.2** | `node_modules/drizzle-orm` |
 | **Doc Generator** | MkDocs | Python 3.12+ | `.venv/bin/mkdocs` |
 | **Type Checker** | TypeScript | **v5.x** | `node_modules/typescript` |
 
@@ -23,7 +23,7 @@
 To ensure reproducible builds across different development environments without host OS package conflicts, `org_website` utilizes standalone portable runtimes:
 
 - **Bun Runtime (`bun`)**: Portable JavaScript / TypeScript execution engine and package manager stored in `portables/bun/bin/bun`.
-- **Node.js 26 LTS (`.node_env/`)**: Portable Node.js standalone runtime stored in `.node_env/bin/node`.
+- **Node.js 24 LTS (`.node_env/`)**: Portable Node.js standalone runtime stored in `.node_env/bin/node`.
 - **Python Virtualenv (`./.venv/`)**: Isolated Python environment for MkDocs documentation (`./.venv/bin/mkdocs`).
 - **Portable Executables (`portables/`)**: Standalone binary distributions isolated inside repository folders.
 
@@ -49,13 +49,13 @@ bun install
 
 ---
 
-### Step 2 — Setup Standalone Node.js 26 LTS (`.node_env/`)
+### Step 2 — Setup Standalone Node.js 24 LTS (`.node_env/`)
 
 ```bash
 # Linux (x64)
 python3 -c '
 import urllib.request
-url = "https://nodejs.org/dist/v26.0.0/node-v26.0.0-linux-x64.tar.xz"
+url = "https://nodejs.org/dist/v24.0.0/node-v24.0.0-linux-x64.tar.xz"
 req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
 with urllib.request.urlopen(req) as resp, open("/tmp/node.tar.xz", "wb") as f:
     f.write(resp.read())

@@ -23,7 +23,7 @@ The repository bundles all necessary software so that cloning the repository pro
 | Runtime / Tool | Location in Repo | Primary Purpose | Invocation Command |
 |---|---|---|---|
 | **Bun 1.x** | `portables/bun/bin/bun` | High-performance JS/TS runtime, package runner, and bundler | `bun <script>` or `./run.sh portable dev` |
-| **Node 26 LTS** | `.node_env/bin/node` | JS execution runtime wrapper | `.node_env/bin/node <script>` |
+| **Node 24 LTS** | `.node_env/bin/node` | JS execution runtime wrapper | `.node_env/bin/node <script>` |
 | **Python 3 Environment** | `./.venv/bin/python3` | Standalone Python virtual environment | `./.venv/bin/python3 <script>` |
 | **MkDocs Documentation** | `./.venv/bin/mkdocs` | Material documentation builder and preview server | `./.venv/bin/mkdocs serve` |
 

@@ -4,7 +4,7 @@
 1. **Code & Doc Preservation**: NEVER remove any code block or documentation without detailed analysis and explicit technical justification.
 2. **Bash**: Prefix all bash execution with `rtk` (e.g. `rtk git status`, `rtk docker ps`, `rtk bun test`). Chains use `rtk`: `rtk git add . && rtk git commit`
 3. **Environments & Zero Host Install**: ZERO package installs on host machine (`apt-get`, `npm -g`, `pip`, `brew`). Use standalone repo runtimes ONLY: Bun (`bun`, `portables/bun/bin/bun`), `./.venv/bin/python3`, `./.venv/bin/mkdocs`, `portables/`, or Docker (`./run.sh docker ...` / `./run.sh toolchain ...`). Never system runtimes.
-4. **Tech Stack Baseline (2026)**: Node 26 LTS / Bun 1.x, Next.js 16, React 19, TypeScript 5, Drizzle ORM.
+4. **Tech Stack Baseline (2026)**: Node 24 LTS / Bun 1.x, Next.js 16, React 19, TypeScript 5, Drizzle ORM.
 5. **Command Safety**: NEVER run heavy/time-consuming commands (docker builds, full test suites). Provide command to user.
 6. **Git Policy**: DO NOT commit automatically (`git commit`). Only stage/commit when explicitly requested.
 7. **Work Logs**: Append strictly ONE single line at the very end of `logs/WORKLOGS.md` (tracked in git): `YYYY-MM-DD HH:mm | <brief>` (or via `rtk run "./.agents/hooks/append-log.sh \"<brief>\""`). Never insert blank lines or multi-line text.

@@ -29,7 +29,7 @@
     "@jridgewell/resolve-uri": "^3.1.2",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24",
     "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",

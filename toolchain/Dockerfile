@@ -16,16 +16,16 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     xz-utils \
     unzip
 
-# Install Go 1.26
-RUN curl -sSL https://go.dev/dl/go1.26.6.linux-amd64.tar.gz | tar -xz -C /usr/local
+# Install Go 1.24
+RUN curl -sSL https://go.dev/dl/go1.24.0.linux-amd64.tar.gz | tar -xz -C /usr/local
 ENV PATH="/usr/local/go/bin:${PATH}"
 ENV GOPATH="/go"
 ENV PATH="${GOPATH}/bin:${PATH}"
 
-# Install Node.js 26 LTS
+# Install Node.js 24 LTS
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
-    curl -fsSL https://deb.nodesource.com/setup_26.x | bash - \
+    curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs
 
 # Install Bun
@@ -36,25 +36,25 @@ ENV PATH="/root/.bun/bin:${PATH}"
 # Install Python-based tools with pip cache mount
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --break-system-packages \
-    ruff==0.1.11 \
+    ruff>=0.9.0 \
     sqlfluff>=3.0.0 \
-    semgrep==1.54.0 \
-    mkdocs==1.5.3 \
-    mkdocs-material==9.5.3
+    semgrep>=1.90.0 \
+    mkdocs>=1.6.0 \
+    mkdocs-material>=9.5.40
 
 # Pre-compiled binaries for golangci-lint, govulncheck & Gitleaks
 RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest && \
     go install golang.org/x/vuln/cmd/govulncheck@latest && \
     cp /go/bin/golangci-lint /usr/local/bin/ && \
     cp /go/bin/govulncheck /usr/local/bin/ && \
-    curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.18.2/gitleaks_8.18.2_linux_x64.tar.gz | tar -xz -C /usr/local/bin gitleaks
+    curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.24.0/gitleaks_8.24.0_linux_x64.tar.gz | tar -xz -C /usr/local/bin gitleaks
 
 # Copy Trivy from the official image
-COPY --from=aquasec/trivy:0.49.1 /usr/local/bin/trivy /usr/local/bin/trivy
+COPY --from=aquasec/trivy:latest /usr/local/bin/trivy /usr/local/bin/trivy
 
 # Install dependency-cruiser globally with npm cache mount
 RUN --mount=type=cache,target=/root/.npm \
-    npm install -g dependency-cruiser@16.2.0
+    npm install -g dependency-cruiser@latest
 
 # Set workspace directory
 WORKDIR /app

@@ -38,7 +38,7 @@
     "@biomejs/biome": "^2.5.7",
     "@jridgewell/resolve-uri": "^3.1.2",
     "@jridgewell/trace-mapping": "^0.3.25",
-    "@types/node": "^20.0.0",
+    "@types/node": "^24.0.0",
     "@types/pg": "^8.20.0",
     "bun-types": "^1.0.0",
     "dependency-cruiser": "^16.2.0",
