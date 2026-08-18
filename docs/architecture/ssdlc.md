@@ -50,6 +50,7 @@ graph TD
 | :--- | :--- | :--- | :--- |
 | **Layer 0 (Instant)** | **Sensitive File Blocklist** | All staged paths | Rejects `.env*`, `*.pem`, `*.key`, `id_rsa`, `*.sqlite`, `*.kdbx` immediately. |
 | **Layer 0 (Instant)** | **Trojan Source Blocker** | All staged diffs | Scans for invisible unicode (Bidi `\u202A..\u2069`, `\u200B`) preventing CVE-2021-42574. |
+| **Layer 0 (Instant)** | **Relative Import Enforcer** | `*.ts`, `*.tsx`, `*.js`, `*.jsx` | Enforces absolute module aliases (`@/...`), rejecting relative imports (`./`, `../`). |
 | **Layer 0 (Instant)** | **Repo Bloat & Mode Guard** | All staged files | Rejects files > 1 MB and blocks unauthorized `chmod +x` executable bits on non-scripts. |
 | **Layer 0 (Instant)** | **Case-Collision & MkDocs** | Staged paths & docs | Prevents case-insensitive filename clashes and verifies doc registration in `mkdocs.yml`. |
 | **Layer 1 (Linter)** | **Biome** | `*.js`, `*.ts`, `*.json`, `*.css` | Sub-millisecond syntax verification, code formatting, and semantic linting. |

@@ -12,6 +12,7 @@ The toolchain packages analysis utilities and zero-overhead pre-commit gates acr
 |---|---|---|---|---|
 | **Layer 0** | **Instant Hygiene (<20ms)** | **Blocklist & Mode Guards** | Staged files | Blocks `.env*`, `*.pem`, `id_rsa`, `*.sqlite`, >1MB files, invalid `chmod +x` |
 | **Layer 0** | **Security Integrity** | **Trojan Source Scanner** | Staged diffs | Prevents invisible Bidi unicode override attacks (CVE-2021-42574) |
+| **Layer 0** | **Architectural Hygiene** | **Relative Import Guard** | Staged TS/JS | Rejects relative imports (`./`, `../`) in favor of clean aliases (`@/...`) |
 | **Layer 1** | **Linting & Code Style** | **Biome** | TypeScript / JavaScript | Rust-native fast syntax validation, linting, and formatting |
 | | | **Ruff** | Python | High-speed linting and formatting with `.ruff_cache` |
 | | | **golangci-lint** | Go | Metalinter for Go codebase |

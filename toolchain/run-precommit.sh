@@ -170,6 +170,22 @@ for file in "${STAGED_FILES[@]}"; do
   fi
 done
 
+# H. Relative Import Enforcer (Shift-Left Architectural Hygiene)
+for file in "${STAGED_FILES[@]}"; do
+  if [[ "$file" =~ \.(ts|tsx|js|jsx)$ && "$file" != "test/unit/relativeImports.test.ts" && ! "$file" =~ ^test/apps/ && ! "$file" =~ ^scripts/replace-relative-imports ]]; then
+    if [ -f "$file" ]; then
+      rel_violations=$(grep -nE "(from[[:space:]]+|import[[:space:]]*\(|require[[:space:]]*\()[[:space:]]*[\'\"][.][.]?/" "$file" 2>/dev/null | grep -vE '\.(css|scss|sass)' || true)
+      if [ -n "$rel_violations" ]; then
+        L0_ERRORS+=("❌ Relative import path detected in '$file' (Use path alias @/... instead):")
+        while IFS= read -r vline; do
+          [ -n "$vline" ] && L0_ERRORS+=("     $vline")
+        done <<< "$rel_violations"
+        L0_FAILED=1
+      fi
+    fi
+  fi
+done
+
 if [ $L0_FAILED -ne 0 ]; then
   echo -e "\n${RED}${BOLD}==============================================================================${RESET}"
   echo -e "${RED}${BOLD}   🚨 LAYER 0 HYGIENE & REPOSITORY INTEGRITY CHECKS FAILED                   ${RESET}"
