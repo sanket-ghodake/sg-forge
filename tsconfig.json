@@ -10,6 +10,7 @@
       "@frontend/*": ["core/src/frontend/*"],
       "@apps/*": ["sandbox/apps/*"],
       "@sdk/*": ["packages/sdk/*"],
+      "@scripts/*": ["scripts/*"],
       "@test/*": ["test/*"]
     },
     "allowJs": true,

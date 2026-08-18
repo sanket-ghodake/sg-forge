@@ -5,9 +5,9 @@
  */
 
 import { describe, expect, it } from "bun:test";
+import { scanAppManifests } from "@scripts/edge-reverse-proxy";
 import fs from "fs";
 import path from "path";
-import { scanAppManifests } from "../scripts/edge-reverse-proxy";
 
 describe("Edge Reverse Proxy & Manifest Discovery", () => {
   it("should scan and discover existing sandbox application manifests", () => {

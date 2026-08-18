@@ -1,6 +1,6 @@
 import type React from "react";
-import { Header } from "./Header";
-import { type NavItem, Sidebar } from "./Sidebar";
+import { Header } from "@/app/components/ui/Header";
+import { type NavItem, Sidebar } from "@/app/components/ui/Sidebar";
 
 interface AppShellProps {
   children: React.ReactNode;

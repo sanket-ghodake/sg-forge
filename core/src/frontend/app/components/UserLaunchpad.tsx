@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { AppShell } from "./ui/AppShell";
+import { AppShell } from "@/app/components/ui/AppShell";
 
 const EmployeesApp = dynamic<any>(() => import("@apps/employees"), {
   ssr: false,

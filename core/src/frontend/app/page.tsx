@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import AdminPanel from "./components/AdminPanel";
-import { OrgCanvas, type OrgCanvasRef } from "./components/OrgCanvas";
-import SettingsPanel from "./components/SettingsPanel";
-import { AppShell } from "./components/ui/AppShell";
+import AdminPanel from "@/app/components/AdminPanel";
+import { OrgCanvas, type OrgCanvasRef } from "@/app/components/OrgCanvas";
+import SettingsPanel from "@/app/components/SettingsPanel";
+import { AppShell } from "@/app/components/ui/AppShell";
 
 export default function DashboardPage() {
   const router = useRouter();
