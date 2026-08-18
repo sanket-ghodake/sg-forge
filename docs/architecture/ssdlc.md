@@ -51,6 +51,8 @@ graph TD
 | **Layer 0 (Instant)** | **Sensitive File Blocklist** | All staged paths | Rejects `.env*`, `*.pem`, `*.key`, `id_rsa`, `*.sqlite`, `*.kdbx` immediately. |
 | **Layer 0 (Instant)** | **Trojan Source Blocker** | All staged diffs | Scans for invisible unicode (Bidi `\u202A..\u2069`, `\u200B`) preventing CVE-2021-42574. |
 | **Layer 0 (Instant)** | **Relative Import Enforcer** | `*.ts`, `*.tsx`, `*.js`, `*.jsx` | Enforces absolute module aliases (`@/...`), rejecting relative imports (`./`, `../`). |
+| **Layer 0 (Instant)** | **Debug Artifacts Blocker** | `*.ts`, `*.tsx`, `*.py` | Rejects stray `debugger;`, `breakpoint()`, or `pdb.set_trace()` in production code. |
+| **Layer 0 (Instant)** | **Agent Rule Sync Guard** | `AGENTS.md`, `.agents/` | Verifies that all agent directives across IDEs are synchronized (Rule 9). |
 | **Layer 0 (Instant)** | **Repo Bloat & Mode Guard** | All staged files | Rejects files > 1 MB and blocks unauthorized `chmod +x` executable bits on non-scripts. |
 | **Layer 0 (Instant)** | **Case-Collision & MkDocs** | Staged paths & docs | Prevents case-insensitive filename clashes and verifies doc registration in `mkdocs.yml`. |
 | **Layer 1 (Linter)** | **Biome** | `*.js`, `*.ts`, `*.json`, `*.css` | Sub-millisecond syntax verification, code formatting, and semantic linting. |
@@ -74,7 +76,20 @@ Benchmarked on Linux x86_64 using GNU `time -v` (Maximum Resident Set Size & CPU
 
 ---
 
-## 🐳 2. Containerized Toolchain Platform
+## 🚀 2. Local Pre-Push Quality Gates (`.husky/pre-push`)
+
+Before commits are transmitted over the wire to remote git servers, `.husky/pre-push` enforces a multi-point regression verification pipeline:
+
+1. **WIP & Fixup Blocker**: Rejects push attempts if un-squashed commits titled `WIP:`, `fixup!`, `squash!`, or `tmp:` are present in the push range.
+2. **Agent Directives Synchronization (Rule 9)**: Runs `./.agents/scripts/sync-agent-instructions.sh` to guarantee that all AI agent instructions (`AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`) remain synchronized across IDEs.
+3. **Multi-Language Test Suite**:
+   - Runs TypeScript/JavaScript unit tests (`bun test test/unit`).
+   - Runs Go microservices test suite (`go test ./...` in `sandbox/apps/reference-go/`).
+4. **Documentation Sanity**: Verifies that MkDocs architectural documentation compiles cleanly without broken links or missing navigation entries.
+
+---
+
+## 🐳 3. Containerized Toolchain Platform
 
 To eliminate the "works on my machine" class of bugs and guarantee absolute parity between local environments and CI/CD pipelines, all verification routines are containerized. 
 

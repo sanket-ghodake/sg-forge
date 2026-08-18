@@ -186,6 +186,51 @@ for file in "${STAGED_FILES[@]}"; do
   fi
 done
 
+# I. Stray Debug Artifacts Blocker (Production Hygiene)
+for file in "${STAGED_FILES[@]}"; do
+  if [[ "$file" =~ \.(ts|tsx|js|jsx)$ && ! "$file" =~ ^(test/|sandbox/) ]]; then
+    if [ -f "$file" ]; then
+      dbg_matches=$(grep -nE '(^|[[:space:];{}])debugger([[:space:];]|$)' "$file" 2>/dev/null || true)
+      if [ -n "$dbg_matches" ]; then
+        L0_ERRORS+=("❌ Stray debugger statement in '$file':")
+        while IFS= read -r dline; do
+          [ -n "$dline" ] && L0_ERRORS+=("     $dline")
+        done <<< "$dbg_matches"
+        L0_FAILED=1
+      fi
+    fi
+  fi
+  if [[ "$file" =~ \.py$ && ! "$file" =~ ^(test/|sandbox/) ]]; then
+    if [ -f "$file" ]; then
+      py_dbg=$(grep -nE '(^|[[:space:];])(breakpoint\(\)|import pdb|pdb\.set_trace\(\))' "$file" 2>/dev/null || true)
+      if [ -n "$py_dbg" ]; then
+        L0_ERRORS+=("❌ Stray Python debugger in '$file':")
+        while IFS= read -r dline; do
+          [ -n "$dline" ] && L0_ERRORS+=("     $dline")
+        done <<< "$py_dbg"
+        L0_FAILED=1
+      fi
+    fi
+  fi
+done
+
+# J. Agent Instructions Sync Integrity Guard (Rule 9)
+AGENT_TOUCHED=false
+for file in "${STAGED_FILES[@]}"; do
+  if [[ "$file" =~ ^(\.agents/|AGENTS\.md|CLAUDE\.md|\.github/copilot-instructions\.md) ]]; then
+    AGENT_TOUCHED=true
+    break
+  fi
+done
+
+if [ "$AGENT_TOUCHED" = true ] && [ -f "./.agents/scripts/sync-agent-instructions.sh" ]; then
+  bash ./.agents/scripts/sync-agent-instructions.sh >/dev/null 2>&1 || true
+  if ! git diff --quiet AGENTS.md .agents/ CLAUDE.md .github/copilot-instructions.md 2>/dev/null; then
+    L0_ERRORS+=("❌ Agent instruction files are out of sync! Run './.agents/scripts/sync-agent-instructions.sh' and stage synced files.")
+    L0_FAILED=1
+  fi
+fi
+
 if [ $L0_FAILED -ne 0 ]; then
   echo -e "\n${RED}${BOLD}==============================================================================${RESET}"
   echo -e "${RED}${BOLD}   🚨 LAYER 0 HYGIENE & REPOSITORY INTEGRITY CHECKS FAILED                   ${RESET}"
