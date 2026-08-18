@@ -51,10 +51,11 @@ export async function resolveUserPermissions(userId: string): Promise<string[]> 
  */
 export async function resolveAppPermissions(appId: string, userId: string): Promise<string[]> {
   try {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     // 1. Get app's registered scopes
-    const appResult = await db.execute(sql`
-      SELECT id, scopes FROM forge_apps WHERE id = ${appId} OR slug = ${appId}
-    `);
+    const appResult = uuidRegex.test(appId)
+      ? await db.execute(sql`SELECT id, scopes FROM forge_apps WHERE id = ${appId}`)
+      : await db.execute(sql`SELECT id, scopes FROM forge_apps WHERE slug = ${appId}`);
     const appRows = appResult.rows || appResult;
     if (!appRows || appRows.length === 0) {
       return [];
@@ -133,7 +134,7 @@ export async function hasAppAccess(
     let resolvedAppId = appId;
     if (!uuidRegex.test(appId)) {
       const appLookup = await db.execute(sql`
-        SELECT id FROM forge_apps WHERE id = ${appId} OR slug = ${appId} LIMIT 1
+        SELECT id FROM forge_apps WHERE slug = ${appId} LIMIT 1
       `);
       const lookupRows = (appLookup.rows || appLookup) as any[];
       if (lookupRows && lookupRows.length > 0) {
@@ -224,16 +225,18 @@ async function computeAppAccess(
       `);
       const roleIds = (rolesResult.rows || rolesResult).map((r: any) => r.role_id as string);
 
-      // Fetch active entitlements for the app
-      const entitlementsResult = await db.execute(sql`
-        SELECT subject_type as "subjectType", subject_id as "subjectId", access_type as "accessType"
-        FROM forge_app_entitlements
-        WHERE app_id = ${resolvedAppId}
-          AND status = 'active'
-          AND (expires_at IS NULL OR expires_at > NOW())
-      `);
-
-      const policies = (entitlementsResult.rows || entitlementsResult) as any[];
+      // Fetch active entitlements for the app (only query by app_id if resolved to UUID)
+      let policies: any[] = [];
+      if (uuidRegex.test(resolvedAppId)) {
+        const entitlementsResult = await db.execute(sql`
+          SELECT subject_type as "subjectType", subject_id as "subjectId", access_type as "accessType"
+          FROM forge_app_entitlements
+          WHERE app_id = ${resolvedAppId}
+            AND status = 'active'
+            AND (expires_at IS NULL OR expires_at > NOW())
+        `);
+        policies = (entitlementsResult.rows || entitlementsResult) as any[];
+      }
 
       const matchingPolicies = policies.filter((p) => {
         const sId = p.subjectId;
@@ -267,11 +270,17 @@ async function computeAppAccess(
   }
 
   // 2. Phase 2: Default Fallback to targetRules evaluation
-  const appResult = await db.execute(sql`
-    SELECT id, slug, is_enabled as "isEnabled", target_rules as "targetRules"
-    FROM forge_apps
-    WHERE id = ${resolvedAppId}
-  `);
+  const appResult = uuidRegex.test(resolvedAppId)
+    ? await db.execute(sql`
+        SELECT id, slug, is_enabled as "isEnabled", target_rules as "targetRules"
+        FROM forge_apps
+        WHERE id = ${resolvedAppId}
+      `)
+    : await db.execute(sql`
+        SELECT id, slug, is_enabled as "isEnabled", target_rules as "targetRules"
+        FROM forge_apps
+        WHERE slug = ${resolvedAppId}
+      `);
   const appRows = appResult.rows || appResult;
   if (!appRows || appRows.length === 0) {
     return false;

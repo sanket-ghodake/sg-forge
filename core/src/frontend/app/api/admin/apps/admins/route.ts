@@ -17,10 +17,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing appId parameter" }, { status: 400 });
     }
 
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     // 1. Resolve App ID
-    const appResult = await db.execute(sql`
-      SELECT id FROM forge_apps WHERE id = ${appId} OR slug = ${appId}
-    `);
+    const appResult = uuidRegex.test(appId)
+      ? await db.execute(sql`SELECT id FROM forge_apps WHERE id = ${appId}`)
+      : await db.execute(sql`SELECT id FROM forge_apps WHERE slug = ${appId}`);
     const appRows = appResult.rows || appResult;
     if (!appRows || appRows.length === 0) {
       return NextResponse.json({ error: "App not found" }, { status: 404 });
@@ -77,10 +78,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     // 1. Resolve App ID
-    const appResult = await db.execute(sql`
-      SELECT id FROM forge_apps WHERE id = ${appId} OR slug = ${appId}
-    `);
+    const appResult = uuidRegex.test(appId)
+      ? await db.execute(sql`SELECT id FROM forge_apps WHERE id = ${appId}`)
+      : await db.execute(sql`SELECT id FROM forge_apps WHERE slug = ${appId}`);
     const appRows = appResult.rows || appResult;
     if (!appRows || appRows.length === 0) {
       return NextResponse.json({ error: "App not found" }, { status: 404 });
