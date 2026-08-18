@@ -200,6 +200,7 @@ jobs:
           DATABASE_URL: postgres://lifeos:change_me_db_password@localhost:5432/org_db
         run: |
           bun run core/src/database/initialize-local-db.ts
+          bun -e "import { parseAndRegisterManifests } from './core/src/backend/utils/manifestParser'; await parseAndRegisterManifests();"
 
       - name: Run Full Integration Test Suite
         env:

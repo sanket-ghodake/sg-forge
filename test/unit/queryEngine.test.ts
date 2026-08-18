@@ -3,12 +3,12 @@ import { executeAdminQuery } from "@backend/api/admin/queryEngine";
 import { db, roDb } from "@database/connection";
 
 // Mock both db.execute and roDb.execute methods
-const mockExecute = spyOn(db, "execute").mockImplementation(async (sqlObj: any) => {
+const mockExecute = spyOn(db, "execute").mockImplementation((async (sqlObj: any) => {
   return { rows: [{ result: "mocked" }], rowCount: 1 };
-});
-const mockRoExecute = spyOn(roDb, "execute").mockImplementation(async (sqlObj: any) => {
+}) as any);
+const mockRoExecute = spyOn(roDb, "execute").mockImplementation((async (sqlObj: any) => {
   return { rows: [{ result: "mocked" }], rowCount: 1 };
-});
+}) as any);
 
 afterAll(() => {
   mockExecute.mockRestore();

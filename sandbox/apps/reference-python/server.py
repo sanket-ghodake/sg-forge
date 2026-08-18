@@ -1,17 +1,15 @@
 import http.server
-import socketserver
-import urllib.request
-import urllib.error
 import json
 import os
+import socketserver
 import sys
-from urllib.parse import urlparse, parse_qs
+import urllib.error
+import urllib.request
+from urllib.parse import parse_qs, urlparse
 
 PORT = 8087
 PORTAL_URL = os.environ.get("PORTAL_URL", "http://localhost:3001")
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgres://lifeos:change_me_db_password@localhost:5432/org_db"
-)
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://lifeos:change_me_db_password@localhost:5432/org_db")
 
 # In-memory document storage
 documents_store = [
@@ -32,9 +30,7 @@ documents_store = [
 
 def write_portal_audit_log(access_token, action, severity, payload):
     url = f"{PORTAL_URL}/api/v1/audit/log"
-    body = json.dumps(
-        {"action": action, "severity": severity, "payload": payload}
-    ).encode("utf-8")
+    body = json.dumps({"action": action, "severity": severity, "payload": payload}).encode("utf-8")
 
     req = urllib.request.Request(
         url,
@@ -58,9 +54,7 @@ def validate_token_via_portal(access_token):
     This shows a completely database-agnostic architecture.
     """
     url = f"{PORTAL_URL}/api/v1/user"
-    req = urllib.request.Request(
-        url, headers={"Authorization": f"Bearer {access_token}"}, method="GET"
-    )
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {access_token}"}, method="GET")
     try:
         with urllib.request.urlopen(req, timeout=3) as resp:
             data = json.loads(resp.read().decode("utf-8"))
@@ -194,9 +188,7 @@ class ReferenceAppHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
 
             session_str = json.dumps(session_data) if session_data else "null"
-            rendered_html = HTML_TEMPLATE.replace(
-                "{{SESSION_DATA}}", session_str
-            ).replace("{{CLIENT_ID}}", client_id)
+            rendered_html = HTML_TEMPLATE.replace("{{SESSION_DATA}}", session_str).replace("{{CLIENT_ID}}", client_id)
             self.wfile.write(rendered_html.encode("utf-8"))
             return
 

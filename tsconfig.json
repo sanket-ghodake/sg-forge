@@ -23,11 +23,10 @@
     "types": ["bun-types"]
   },
   "include": [
-    "core/src/**/*.ts",
-    "core/src/**/*.tsx",
+    "core/src/backend/**/*.ts",
+    "core/src/database/**/*.ts",
     "packages/**/*.ts",
-    "test/**/*.ts",
-    "test/**/*.tsx"
+    "scripts/**/*.ts"
   ],
-  "exclude": ["node_modules", "portables", ".next", "dist", "build"]
+  "exclude": ["node_modules", "portables", "core/src/frontend", ".next", "dist", "build"]
 }
